@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PaydaySuperGuard</title>
+<style>
+  :root{
+    --font-display: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+    --bg:#F2F4F3;
+    --surface:#FFFFFF;
+    --ink:#16211F;
+    --ink-soft:#5B6A67;
+    --line:#E1E6E4;
+    --teal:#1F5C5A;
+    --teal-soft:#E7EFEE;
+    --teal-deep:#12302F;
+    --ok:#2E7D5B;
+    --ok-soft:#E5F2EA;
+    --warn:#A8721F;
+    --warn-soft:#FAF0DE;
+    --danger:#AE4531;
+    --danger-soft:#F8EAE6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:1040px;margin:0 auto;padding:44px 22px 0;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:6px 2px 30px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin:0 0 14px;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-size:34px;
+    margin:0 0 14px;
+    font-weight:600;
+    letter-spacing:-.01em;
+    color:var(--teal-deep);
+  }
+  .hero p{
+    max-width:600px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin:0;
+    font-size:15px;
+  }
+  .rule-strip{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+    flex-wrap:wrap;
+  }
+  .rule-chip{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--ink-soft);
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:100px;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:12px;
+    flex-wrap:wrap;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+  }
+  .file-label{
+    border:1px dashed #C4D0CD;
+    border-radius:8px;
+    padding:9px 14px;
+    font-size:13px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s;
+  }
+  .file-label:hover{border-color:var(--teal);color:var(--teal);}
+  input[type=file]{display:none;}
+  button{
+    font-family:var(--font-body);
+    font-size:13px;
+    font-weight:600;
+    border-radius:8px;
+    padding:9px 15px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-primary:hover{background:var(--teal-deep);}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink-soft);}
+  .btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+  .controls-note{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-left:auto;
+  }
+  .setting{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .setting input[type=number]{
+    width:68px;
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:var(--font-mono);
+    font-size:12px;
+  }
+  .setting select{
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:var(--font-body);
+    font-size:12px;
+    color:var(--ink);
+  }
+
+  .settings-block{
+    display:block;
+    padding:16px 18px 14px;
+  }
+  .settings-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .settings-help{
+    font-size:12px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:8px 0 0;
+    max-width:640px;
+  }
+  .rate-check-note{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--teal);
+  }
+
+  /* ---------- Summary ---------- */
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    margin:20px 0;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .stat{
+    background:var(--surface);
+    padding:18px 20px;
+  }
+  .stat .label{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .stat .value{
+    font-family:var(--font-display);
+    font-size:26px;
+    font-weight:600;
+  }
+  .stat .sub{font-size:11.5px;color:var(--ink-soft);margin-top:5px;}
+  .stat.danger .value{color:var(--danger);}
+  .stat.warn .value{color:var(--warn);}
+
+  /* ---------- Filters ---------- */
+  .filters{
+    display:flex;
+    gap:8px;
+    margin:0 0 14px;
+    flex-wrap:wrap;
+  }
+  .tab{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    padding:7px 13px;
+    border-radius:100px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s;
+  }
+  .tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+  /* ---------- Table ---------- */
+  .table-wrap{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow-x:auto;
+  }
+  table{border-collapse:collapse;width:100%;min-width:820px;}
+  thead th{
+    text-align:left;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:13px 14px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+    font-weight:500;
+  }
+  tbody td{
+    padding:13px 14px;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#FAFBFA;}
+  .name{font-weight:600;}
+  .sub-id{display:block;font-size:10.5px;color:var(--ink-soft);font-family:var(--font-mono);margin-top:1px;}
+  .mono{font-family:var(--font-mono);font-size:12.5px;}
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    font-weight:600;
+    padding:4px 9px;
+    border-radius:100px;
+  }
+  .badge.ok{background:var(--ok-soft);color:var(--ok);}
+  .badge.warn{background:var(--warn-soft);color:var(--warn);}
+  .badge.danger{background:var(--danger-soft);color:var(--danger);}
+  .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+  .clock{
+    width:130px;
+    height:8px;
+    background:#EEF1F0;
+    border-radius:5px;
+    position:relative;
+  }
+  .clock .fill{
+    position:absolute;left:0;top:0;bottom:0;
+    border-radius:5px;
+  }
+  .clock .fill.ok{background:var(--ok);}
+  .clock .fill.warn{background:var(--warn);}
+  .clock .fill.danger{background:var(--danger);}
+  .clock .deadline-tick{
+    position:absolute;top:-2px;bottom:-2px;
+    width:1.5px;background:var(--ink);
+    opacity:.3;
+  }
+  .clock-label{font-size:10px;color:var(--ink-soft);margin-top:3px;font-family:var(--font-mono);}
+
+  .empty{
+    padding:70px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{
+    margin-top:56px;
+    background:var(--teal-deep);
+    color:#CBDEDB;
+    padding:34px 22px 26px;
+  }
+  .site-footer-inner{
+    max-width:1040px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .footer-nav{
+    display:flex;
+    justify-content:center;
+    gap:28px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .footer-nav a, .footer-nav button.link-btn{
+    color:#E7F1EF;
+    text-decoration:none;
+    font-size:13.5px;
+    font-family:var(--font-body);
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    font-weight:500;
+  }
+  .footer-nav a:hover, .footer-nav button.link-btn:hover{color:#fff;text-decoration:underline;}
+  .footer-copy{
+    font-size:12px;
+    color:#7FA09C;
+    font-family:var(--font-mono);
+  }
+  .footer-disclaimer{
+    max-width:640px;
+    margin:18px auto 0;
+    font-size:11.5px;
+    line-height:1.6;
+    color:#7FA09C;
+    text-align:center;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(18,29,28,.55);
+    align-items:center;justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);
+    border-radius:14px;
+    max-width:560px;
+    width:100%;
+    max-height:80vh;
+    overflow-y:auto;
+    padding:32px 34px;
+  }
+  .modal h2{
+    font-family:var(--font-display);
+    font-size:22px;
+    color:var(--teal-deep);
+    margin:0 0 16px;
+  }
+  .modal h3{
+    font-family:var(--font-body);
+    font-size:13.5px;
+    color:var(--ink);
+    margin:20px 0 6px;
+  }
+  .modal p, .modal li{
+    font-size:13.5px;
+    line-height:1.65;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .modal-close{
+    float:right;
+    background:none;border:none;
+    font-size:20px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    line-height:1;
+    padding:0;
+  }
+
+  @media (max-width:640px){
+    .summary{grid-template-columns:1fr 1fr;}
+    .hero h1{font-size:26px;}
+    .app{padding:28px 16px 0;}
+  }
+
+  @media print{
+    body{background:#fff;}
+    .hero, .controls, .filters, .site-footer{display:none !important;}
+    .print-header{display:block !important;}
+    .table-wrap{border:none;}
+    table{min-width:0;}
+    thead th, tbody td{padding:6px 8px;font-size:11px;}
+    .clock, .clock-label{display:none;}
+  }
+  .print-header{display:none;padding:10px 0 16px;}
+  .print-header h2{font-family:var(--font-display);margin:0 0 4px;}
+  .print-header p{font-size:12px;color:#555;margin:0;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hero">
+    <p class="eyebrow">Payday Super &middot; compliance check</p>
+    <h1>PaydaySuperGuard</h1>
+    <p>Checks every super guarantee payment against the 1 July 2026 Payday Super deadline &mdash; received by the employee's fund within 7 business days of payday, or 20 for a new employee or new fund &mdash; before the ATO's own systems flag it for you.</p>
+    <div class="rule-strip">
+      <span class="rule-chip">7 business days &middot; standard</span>
+      <span class="rule-chip">20 business days &middot; new employee / new fund</span>
+      <span class="rule-chip">12% &middot; qualifying earnings</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label class="file-label" id="fileLabel">
+      Upload payroll CSV
+      <input type="file" id="fileInput" accept=".csv">
+    </label>
+    <button class="btn-primary" id="loadSample">Load sample data</button>
+    <button class="btn-ghost" id="downloadTemplate">Download CSV template</button>
+    <span class="controls-note" id="fileStatus"></span>
+  </div>
+
+  <div class="controls settings-block" id="settingsPanel">
+    <div class="settings-row">
+      <label class="setting">
+        <span>GIC rate (% p.a.)</span>
+        <input type="number" id="gicRate" step="0.01" value="11.43" />
+      </label>
+      <span class="rate-check-note">Search "ATO general interest charge rates" to check the current figure</span>
+    </div>
+    <p class="settings-help">Defaulted to the July–September 2026 quarter rate. The ATO resets this every quarter — if you're using this tool in a later quarter, click through and update the number.</p>
+
+    <div class="settings-row" style="margin-top:14px;">
+      <label class="setting">
+        <span>Admin uplift basis</span>
+        <select id="upliftMode">
+          <option value="0.6">Full — 60% (default)</option>
+          <option value="0.4">Reduced — 40%</option>
+          <option value="0.36">Reduced — 36%</option>
+        </select>
+      </label>
+    </div>
+    <p class="settings-help">
+      Use <strong>60%</strong> unless one of these clearly applies to this employer: <strong>40%</strong> if there's been no SG assessment or estimate against them in the past 24 months, or <strong>36%</strong> if they voluntarily disclose the shortfall to the ATO within 30 days of the due date, before being contacted about it. If you're not sure which applies, leave it on 60% — it's the safer (higher) assumption to show a client.
+    </p>
+  </div>
+
+  <div class="controls" id="exportRow" style="display:none;">
+    <button class="btn-ghost" id="exportCsv">Export summary (CSV)</button>
+    <button class="btn-ghost" id="exportPdf">Print / Save as PDF</button>
+    <button class="btn-ghost" id="resetTool">Reset</button>
+  </div>
+
+  <div class="print-header">
+    <h2>PaydaySuperGuard — Payday Super review summary</h2>
+    <p id="printDate">Illustrative SGC estimates only, not a substitute for professional advice.</p>
+  </div>
+
+  <div id="content"></div>
+
+  <div style="height:8px"></div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-nav">
+      <button class="link-btn" data-modal="about">About</button>
+      <a href="mailto:support@dashcraftco.com">Contact</a>
+      <button class="link-btn" data-modal="terms">Terms of Use</button>
+      <button class="link-btn" data-modal="privacy">Privacy Policy</button>
+    </div>
+    <div class="footer-copy">&copy; 2026 DashCraftCo &middot; PaydaySuperGuard</div>
+    <div class="footer-disclaimer">
+      Illustrative prototype only &mdash; not tax, super, or financial advice. Business-day counting uses each employee's state 2026 public holiday calendar (national holidays plus major state-specific dates published by the Fair Work Ombudsman; some regional-only observances are not included). Estimated SGC is calculated as shortfall + daily-compounding notional earnings at the entered GIC rate + the selected admin uplift rate &mdash; it does not model every ATO discretion or timing rule. Confirm real obligations with the ATO or a registered tax/BAS practitioner before relying on any figure here.
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalAbout">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>About PaydaySuperGuard</h2>
+    <p>PaydaySuperGuard is an independent review tool that checks payroll super guarantee (SG) payments against Australia's Payday Super deadline, which took effect 1 July 2026. Upload a payroll export and it flags each payment as on time, pending, or late, and estimates the potential Super Guarantee Charge (SGC) exposure for anything that missed its window.</p>
+    <p>Every check runs as plain date-and-arithmetic logic in your browser &mdash; no artificial intelligence is involved in producing the flags or figures.</p>
+    <p>Built by DashCraftCo, an independent maker of practical, privacy-first tools.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalTerms">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>Terms of Use</h2>
+    <p>PaydaySuperGuard is provided free of charge, as-is, with no warranty of any kind, express or implied.</p>
+    <h3>No advice</h3>
+    <p>This tool does not provide tax, superannuation, legal, or financial advice. Outputs, including deadlines and SGC estimates, are illustrative and simplified. They do not account for every rule, exemption, or ATO discretion that may apply to your situation.</p>
+    <h3>Your responsibility</h3>
+    <p>You are responsible for verifying all figures independently and for complying with your actual obligations under Australian law. Confirm anything material with the ATO or a registered tax/BAS practitioner before relying on it.</p>
+    <h3>No liability</h3>
+    <p>DashCraftCo is not liable for any loss or damage arising from use of this tool, including reliance on any calculation, flag, or export it produces.</p>
+    <h3>Changes</h3>
+    <p>These terms may be updated from time to time. Continued use of the tool after changes constitutes acceptance of the updated terms.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalPrivacy">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>Privacy Policy</h2>
+    <h3>Your data stays on your device</h3>
+    <p>Any CSV file you upload is read and processed entirely in your browser. Nothing is sent to a server, stored remotely, or shared with any third party. Closing or refreshing the page clears everything.</p>
+    <h3>No accounts, no tracking</h3>
+    <p>PaydaySuperGuard does not require an account, does not use cookies, and does not run any analytics or tracking scripts.</p>
+    <h3>Exports</h3>
+    <p>CSV and PDF exports are generated locally and saved directly to your device.</p>
+    <h3>Contact</h3>
+    <p>Questions about this policy can be sent to <a href="mailto:support@dashcraftco.com">support@dashcraftco.com</a>.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const TODAY = new Date('2026-08-13T00:00:00');
+
+  const NATIONAL_2026 = ['2026-01-01','2026-01-26','2026-04-03','2026-04-06','2026-04-25','2026-12-25'];
+  const HOLIDAYS_BY_STATE = {
+    NSW: [...NATIONAL_2026,'2026-06-08','2026-10-05','2026-12-28'],
+    VIC: [...NATIONAL_2026,'2026-03-09','2026-06-08','2026-11-03','2026-12-28'],
+    QLD: [...NATIONAL_2026,'2026-05-04','2026-10-05','2026-12-28'],
+    WA:  [...NATIONAL_2026,'2026-03-02','2026-04-27','2026-06-01','2026-09-28','2026-12-28'],
+    SA:  [...NATIONAL_2026,'2026-03-09','2026-06-08','2026-10-05','2026-12-28'],
+    TAS: [...NATIONAL_2026,'2026-03-09','2026-06-08','2026-12-28'],
+    ACT: [...NATIONAL_2026,'2026-03-09','2026-04-27','2026-06-01','2026-06-08','2026-10-05','2026-12-28'],
+    NT:  [...NATIONAL_2026,'2026-05-04','2026-06-08','2026-08-03','2026-12-28'],
+  };
+  function holidaySetFor(state){
+    const key = (state||'').toUpperCase().trim();
+    const list = HOLIDAYS_BY_STATE[key] || NATIONAL_2026;
+    return new Set(list);
+  }
+
+  const SAMPLE_CSV =
+`employee_id,employee_name,payday_date,employment_start_date,fund_change_flag,gross_wages,salary_sacrifice_super,super_rate,sg_amount_actually_paid,date_received_by_fund,state
+EMP001,J. Smith,2026-08-07,2022-03-01,No,2400,0,12,288,2026-08-13,NSW
+EMP001,J. Smith,2026-07-24,2022-03-01,No,2400,0,12,288,2026-07-30,NSW
+EMP002,A. Nguyen,2026-08-07,2021-11-10,No,3100,100,12,384,2026-08-20,VIC
+EMP002,A. Nguyen,2026-07-24,2021-11-10,No,3100,100,12,384,2026-07-31,VIC
+EMP003,R. Patel,2026-08-07,2026-07-27,No,2000,0,12,240,,QLD
+EMP004,M. Chen,2026-08-07,2020-05-04,No,2850,150,12,360,2026-08-14,NSW
+EMP004,M. Chen,2026-07-24,2020-05-04,No,2850,150,12,360,2026-08-05,NSW
+EMP005,T. Wallace,2026-08-07,2019-02-18,Yes,3400,0,12,408,2026-08-28,WA
+EMP006,S. Kelly,2026-08-07,2023-09-01,No,2600,0,12,312,2026-08-12,SA
+EMP006,S. Kelly,2026-07-24,2023-09-01,No,2600,0,12,312,2026-07-29,SA
+EMP007,D. Osei,2026-08-07,2018-06-12,No,4100,200,12,516,2026-08-25,NSW
+EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
+
+  function isBusinessDay(d, holidays){
+    const day = d.getDay();
+    const iso = d.toISOString().slice(0,10);
+    return day !== 0 && day !== 6 && !holidays.has(iso);
+  }
+  function addBusinessDays(start, n, holidays){
+    let d = new Date(start);
+    let added = 0;
+    while(added < n){
+      d.setDate(d.getDate()+1);
+      if(isBusinessDay(d, holidays)) added++;
+    }
+    return d;
+  }
+  function calendarDiff(a,b){ return Math.round((b-a)/(1000*60*60*24)); }
+  function fmt(d){
+    if(!d) return '—';
+    return d.toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'});
+  }
+  function money(n){ return '$'+n.toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+
+  function parseCSV(text){
+    const lines = text.trim().split(/\r?\n/);
+    const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+    return lines.slice(1).filter(l=>l.trim()).map(line=>{
+      const cells = line.split(',').map(c=>c.trim());
+      const row = {};
+      headers.forEach((h,i)=> row[h] = cells[i] !== undefined ? cells[i] : '');
+      return row;
+    });
+  }
+
+  function computeRows(raw){
+    const firstPayday = {};
+    raw.forEach(r=>{
+      const t = new Date(r.payday_date).getTime();
+      if(!firstPayday[r.employee_id] || t < firstPayday[r.employee_id]) firstPayday[r.employee_id] = t;
+    });
+
+    const gicRate = (parseFloat(document.getElementById('gicRate')?.value) || 11.43) / 100;
+    const upliftRate = parseFloat(document.getElementById('upliftMode')?.value) || 0.6;
+    const dailyGic = gicRate / 365;
+
+    function computeSGC(base, days){
+      const notional = base * (Math.pow(1 + dailyGic, days) - 1);
+      const uplift = upliftRate * (base + notional);
+      return {
+        shortfall: Math.round(base),
+        notional: Math.round(notional),
+        uplift: Math.round(uplift),
+        total: Math.round(base + notional + uplift)
+      };
+    }
+
+    return raw.map(r=>{
+      const payday = new Date(r.payday_date);
+      const isFirstPayment = new Date(r.employment_start_date).getTime() && payday.getTime() === firstPayday[r.employee_id];
+      const fundChange = (r.fund_change_flag||'').toLowerCase() === 'yes';
+      const windowDays = (isFirstPayment || fundChange) ? 20 : 7;
+      const holidays = holidaySetFor(r.state);
+      const deadline = addBusinessDays(payday, windowDays, holidays);
+
+      const gross = parseFloat(r.gross_wages)||0;
+      const sacrifice = parseFloat(r.salary_sacrifice_super)||0;
+      const rate = (parseFloat(r.super_rate)||12)/100;
+      const qualifyingEarnings = gross + sacrifice;
+      const expectedSG = Math.round(qualifyingEarnings * rate * 100)/100;
+      const paidSG = parseFloat(r.sg_amount_actually_paid)||0;
+
+      const received = r.date_received_by_fund ? new Date(r.date_received_by_fund) : null;
+
+      let status, daysLate = 0;
+      let sgcShortfall = 0, sgcNotionalEarnings = 0, sgcAdminUplift = 0, sgcTotal = 0;
+
+      if(received){
+        if(received.getTime() <= deadline.getTime()){
+          status = 'on_time';
+        } else {
+          status = 'late';
+          daysLate = calendarDiff(deadline, received);
+          const sgc = computeSGC(expectedSG, daysLate);
+          sgcShortfall = sgc.shortfall; sgcNotionalEarnings = sgc.notional;
+          sgcAdminUplift = sgc.uplift; sgcTotal = sgc.total;
+        }
+      } else {
+        if(TODAY.getTime() > deadline.getTime()){
+          status = 'overdue_pending';
+          daysLate = calendarDiff(deadline, TODAY);
+          const sgc = computeSGC(expectedSG, daysLate);
+          sgcShortfall = sgc.shortfall; sgcNotionalEarnings = sgc.notional;
+          sgcAdminUplift = sgc.uplift; sgcTotal = sgc.total;
+        } else {
+          status = 'pending';
+        }
+      }
+
+      return {
+        ...r, payday, deadline, received, windowDays, isFirstPayment, fundChange,
+        qualifyingEarnings, expectedSG, paidSG, status, daysLate,
+        sgcShortfall, sgcNotionalEarnings, sgcAdminUplift, exposure: sgcTotal
+      };
+    });
+  }
+
+  function statusMeta(status){
+    switch(status){
+      case 'on_time': return {label:'On time', cls:'ok'};
+      case 'late': return {label:'Late', cls:'danger'};
+      case 'overdue_pending': return {label:'Overdue — not yet received', cls:'danger'};
+      case 'pending': return {label:'Pending — within window', cls:'warn'};
+    }
+  }
+
+  let currentRows = [];
+  let currentFilter = 'all';
+  let rawRows = [];
+
+  function renderClock(row){
+    const deadlineCal = Math.max(calendarDiff(row.payday, row.deadline),1);
+    const receivedCal = row.received ? calendarDiff(row.payday, row.received) : calendarDiff(row.payday, TODAY);
+    const span = Math.max(deadlineCal, receivedCal) * 1.15;
+    const deadlinePct = Math.min((deadlineCal/span)*100, 100);
+    const fillPct = Math.min((Math.max(receivedCal,0)/span)*100, 100);
+    const cls = row.status === 'on_time' ? 'ok' : (row.status === 'pending' ? 'warn' : 'danger');
+    return `
+      <div class="clock">
+        <div class="fill ${cls}" style="width:${fillPct}%"></div>
+        <div class="deadline-tick" style="left:${deadlinePct}%"></div>
+      </div>
+      <div class="clock-label">${row.windowDays}bd window</div>
+    `;
+  }
+
+  function render(){
+    const content = document.getElementById('content');
+    if(currentRows.length === 0){
+      content.innerHTML = `<div class="empty">No data loaded yet. Upload a payroll CSV or load the sample dataset above.</div>`;
+      return;
+    }
+
+    const total = currentRows.length;
+    const onTime = currentRows.filter(r=>r.status==='on_time').length;
+    const late = currentRows.filter(r=>r.status==='late'||r.status==='overdue_pending').length;
+    const pending = currentRows.filter(r=>r.status==='pending').length;
+    const totalExposure = currentRows.reduce((s,r)=>s+r.exposure,0);
+    const employeesAffected = new Set(currentRows.filter(r=>r.status==='late'||r.status==='overdue_pending').map(r=>r.employee_id)).size;
+
+    const filtered = currentFilter==='all' ? currentRows :
+      currentFilter==='late' ? currentRows.filter(r=>r.status==='late'||r.status==='overdue_pending') :
+      currentFilter==='pending' ? currentRows.filter(r=>r.status==='pending') :
+      currentRows.filter(r=>r.status==='on_time');
+
+    content.innerHTML = `
+      <div class="summary">
+        <div class="stat">
+          <div class="label">Payments checked</div>
+          <div class="value">${total}</div>
+          <div class="sub">${onTime} on time</div>
+        </div>
+        <div class="stat danger">
+          <div class="label">Late / overdue</div>
+          <div class="value">${late}</div>
+          <div class="sub">${employeesAffected} employee${employeesAffected===1?'':'s'} affected</div>
+        </div>
+        <div class="stat warn">
+          <div class="label">Pending, within window</div>
+          <div class="value">${pending}</div>
+          <div class="sub">watch these</div>
+        </div>
+        <div class="stat danger">
+          <div class="label">Est. SGC exposure</div>
+          <div class="value">${money(totalExposure)}</div>
+          <div class="sub">shortfall + notional earnings + uplift</div>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="tab ${currentFilter==='all'?'active':''}" data-f="all">All (${total})</div>
+        <div class="tab ${currentFilter==='late'?'active':''}" data-f="late">Late / overdue (${late})</div>
+        <div class="tab ${currentFilter==='pending'?'active':''}" data-f="pending">Pending (${pending})</div>
+        <div class="tab ${currentFilter==='ontime'?'active':''}" data-f="ontime">On time (${onTime})</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Payday</th>
+              <th>Deadline</th>
+              <th>Received</th>
+              <th>Timeline</th>
+              <th>Status</th>
+              <th>Expected SG</th>
+              <th>Est. SGC</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(r=>{
+              const meta = statusMeta(r.status);
+              return `
+                <tr>
+                  <td><span class="name">${r.employee_name}</span><span class="sub-id">${r.employee_id}${r.isFirstPayment?' · new':''}${r.fundChange?' · fund change':''} · ${r.state||'—'}</span></td>
+                  <td class="mono">${fmt(r.payday)}</td>
+                  <td class="mono">${fmt(r.deadline)}</td>
+                  <td class="mono">${r.received ? fmt(r.received) : '—'}</td>
+                  <td>${renderClock(r)}</td>
+                  <td><span class="badge ${meta.cls}"><span class="dot"></span>${meta.label}${r.daysLate?` · ${r.daysLate}d`:''}</span></td>
+                  <td class="mono">${money(r.expectedSG)}</td>
+                  <td class="mono">${r.exposure ? money(r.exposure) : '—'}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    content.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        currentFilter = tab.dataset.f;
+        render();
+      });
+    });
+  }
+
+  function loadCSVText(text){
+    rawRows = parseCSV(text);
+    currentRows = computeRows(rawRows);
+    currentFilter = 'all';
+    document.getElementById('exportRow').style.display = 'flex';
+    render();
+  }
+
+  function recompute(){
+    if(rawRows.length === 0) return;
+    currentRows = computeRows(rawRows);
+    render();
+  }
+
+  document.getElementById('resetTool').addEventListener('click', ()=>{
+    rawRows = [];
+    currentRows = [];
+    currentFilter = 'all';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileStatus').textContent = '';
+    document.getElementById('exportRow').style.display = 'none';
+    render();
+  });
+
+  document.getElementById('loadSample').addEventListener('click', ()=>{
+    document.getElementById('fileStatus').textContent = 'Loaded: sample dataset (8 employees)';
+    loadCSVText(SAMPLE_CSV);
+  });
+
+  document.getElementById('fileInput').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      document.getElementById('fileStatus').textContent = 'Loaded: '+file.name;
+      loadCSVText(ev.target.result);
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('gicRate').addEventListener('input', recompute);
+  document.getElementById('gicRate').addEventListener('change', recompute);
+  document.getElementById('upliftMode').addEventListener('change', recompute);
+
+  document.getElementById('downloadTemplate').addEventListener('click', ()=>{
+    try{
+      const header = 'employee_id,employee_name,payday_date,employment_start_date,fund_change_flag,gross_wages,salary_sacrifice_super,super_rate,sg_amount_actually_paid,date_received_by_fund,state\n';
+      const blob = new Blob([header], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'paydaysuperguard_template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }catch(err){
+      alert('Download blocked in this preview environment. This works normally once the tool is hosted live — or copy the header row from the docs above.');
+    }
+  });
+
+  document.getElementById('exportCsv').addEventListener('click', ()=>{
+    try{
+      const headers = ['employee_id','employee_name','payday','deadline','received','status','days_late',
+        'expected_sg','sgc_shortfall','sgc_notional_earnings','sgc_admin_uplift','sgc_total_estimate'];
+      const rows = currentRows.map(r=>[
+        r.employee_id, r.employee_name, r.payday.toISOString().slice(0,10),
+        r.deadline.toISOString().slice(0,10), r.received ? r.received.toISOString().slice(0,10) : '',
+        statusMeta(r.status).label, r.daysLate, r.expectedSG,
+        r.sgcShortfall||0, r.sgcNotionalEarnings||0, r.sgcAdminUplift||0, r.exposure||0
+      ].join(','));
+      const csv = headers.join(',')+'\n'+rows.join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'paydaysuperguard_review_summary.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }catch(err){
+      alert('Export failed in this preview environment. This works normally once the tool is hosted live.');
+    }
+  });
+
+  function inIframe(){
+    try{ return window.self !== window.top; }catch(e){ return true; }
+  }
+
+  function buildPrintableDoc(){
+    const generated = TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'});
+    const rows = currentRows.map(r=>{
+      const meta = statusMeta(r.status);
+      return `<tr>
+        <td>${r.employee_name} (${r.employee_id})</td>
+        <td>${r.state||'—'}</td>
+        <td>${fmt(r.payday)}</td>
+        <td>${fmt(r.deadline)}</td>
+        <td>${r.received ? fmt(r.received) : '—'}</td>
+        <td>${meta.label}${r.daysLate?` (${r.daysLate}d)`:''}</td>
+        <td>${money(r.expectedSG)}</td>
+        <td>${r.exposure ? money(r.exposure) : '—'}</td>
+      </tr>`;
+    }).join('');
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PaydaySuperGuard summary</title>
+    <style>
+      body{font-family:Georgia,serif;color:#16211F;padding:36px;max-width:900px;margin:0 auto;}
+      h1{font-size:22px;margin-bottom:4px;}
+      p.meta{font-family:-apple-system,sans-serif;font-size:12px;color:#5B6A67;margin-top:0;}
+      table{width:100%;border-collapse:collapse;margin-top:20px;font-family:-apple-system,sans-serif;font-size:12px;}
+      th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #E1E6E4;}
+      th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#5B6A67;}
+      p.disclaimer{font-family:-apple-system,sans-serif;font-size:10.5px;color:#5B6A67;margin-top:24px;line-height:1.6;}
+    </style></head><body>
+      <h1>PaydaySuperGuard — Payday Super review summary</h1>
+      <p class="meta">Generated ${generated}. Open this file in your browser, then use Print &rarr; Save as PDF.</p>
+      <table>
+        <thead><tr><th>Employee</th><th>State</th><th>Payday</th><th>Deadline</th><th>Received</th><th>Status</th><th>Expected SG</th><th>Est. SGC</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p class="disclaimer">Illustrative prototype only — not tax, super, or financial advice. Confirm real obligations with the ATO or a registered tax/BAS practitioner before relying on any figure here.</p>
+    </body></html>`;
+  }
+
+  document.getElementById('exportPdf').addEventListener('click', ()=>{
+    try{
+      if(inIframe()){
+        const blob = new Blob([buildPrintableDoc()], {type:'text/html'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'paydaysuperguard_summary.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Downloaded a print-ready summary file. Open it in your browser, then choose Print → Save as PDF. (Direct printing is restricted inside this preview — this step isn\'t needed once the tool is hosted live.)');
+      } else {
+        document.getElementById('printDate').textContent =
+          'Generated '+TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'})+
+          ' — illustrative SGC estimates only, not a substitute for professional advice.';
+        window.print();
+      }
+    }catch(err){
+      alert('Export failed. Please try again, or use the CSV export instead.');
+    }
+  });
+
+  // Modals
+  document.querySelectorAll('[data-modal]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('modal'+btn.dataset.modal.charAt(0).toUpperCase()+btn.dataset.modal.slice(1)).classList.add('open');
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(btn=>{
+    btn.addEventListener('click', ()=> btn.closest('.modal-overlay').classList.remove('open'));
+  });
+  document.querySelectorAll('.modal-overlay').forEach(ov=>{
+    ov.addEventListener('click', (e)=>{ if(e.target === ov) ov.classList.remove('open'); });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
