@@ -79,6 +79,11 @@
     border-radius:100px;
   }
 
+  .rule-chip-privacy{
+    color:var(--teal);
+    border-color:#BFD6D3;
+  }
+
   /* ---------- Controls ---------- */
   .controls{
     display:flex;
@@ -171,7 +176,7 @@
   /* ---------- Summary ---------- */
   .summary{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
     gap:1px;
     margin:20px 0;
     background:var(--line);
@@ -199,6 +204,18 @@
   .stat .sub{font-size:11.5px;color:var(--ink-soft);margin-top:5px;}
   .stat.danger .value{color:var(--danger);}
   .stat.warn .value{color:var(--warn);}
+  .stat.review .value{color:#6647A6;}
+  .period-line{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 4px;
+  }
+  .reconcile-note{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
 
   /* ---------- Filters ---------- */
   .filters{
@@ -240,6 +257,8 @@
     white-space:nowrap;
     font-weight:500;
   }
+  .th-note{font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-soft);opacity:.75;}
+
   tbody td{
     padding:13px 14px;
     border-bottom:1px solid var(--line);
@@ -266,6 +285,7 @@
   .badge.ok{background:var(--ok-soft);color:var(--ok);}
   .badge.warn{background:var(--warn-soft);color:var(--warn);}
   .badge.danger{background:var(--danger-soft);color:var(--danger);}
+  .badge.review{background:#EFEAF6;color:#6647A6;}
   .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
 
   .clock{
@@ -381,6 +401,17 @@
     color:var(--ink-soft);
     margin:0 0 10px;
   }
+  .modal ul{margin:0 0 10px;padding-left:20px;}
+  .modal ul li{margin-bottom:6px;}
+  .modal a{color:var(--teal);}
+  .rules-reviewed{
+    font-size:12px;
+    color:var(--ink-soft);
+    background:var(--teal-soft);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-top:16px;
+  }
   .modal-close{
     float:right;
     background:none;border:none;
@@ -415,13 +446,14 @@
 <div class="app">
 
   <div class="hero">
-    <p class="eyebrow">Payday Super &middot; compliance check</p>
+    <p class="eyebrow">Payday Super &middot; compliance &amp; reconciliation review</p>
     <h1>PaydaySuperGuard</h1>
-    <p>Checks every super guarantee payment against the 1 July 2026 Payday Super deadline &mdash; received by the employee's fund within 7 business days of payday, or 20 for a new employee or new fund &mdash; before the ATO's own systems flag it for you.</p>
+    <p>Review payroll super payments before they become compliance problems. Payday Super applies from 1 July 2026 — super contributions generally need to be received by the employee's fund within 7 business days of payday (longer in some cases, such as new employees or new funds). This tool checks a payroll export against that requirement and surfaces exactly which payments need a closer look.</p>
     <div class="rule-strip">
       <span class="rule-chip">7 business days &middot; standard</span>
       <span class="rule-chip">20 business days &middot; new employee / new fund</span>
       <span class="rule-chip">12% &middot; qualifying earnings</span>
+      <span class="rule-chip rule-chip-privacy">🔒 Processed locally — never uploaded</span>
     </div>
   </div>
 
@@ -461,8 +493,8 @@
   </div>
 
   <div class="controls" id="exportRow" style="display:none;">
-    <button class="btn-ghost" id="exportCsv">Export summary (CSV)</button>
-    <button class="btn-ghost" id="exportPdf">Print / Save as PDF</button>
+    <button class="btn-ghost" id="exportCsv">Export Review Summary (CSV)</button>
+    <button class="btn-ghost" id="exportPdf">Export Review Summary (PDF)</button>
     <button class="btn-ghost" id="resetTool">Reset</button>
   </div>
 
@@ -484,11 +516,9 @@
       <a href="mailto:support@dashcraftco.com">Contact</a>
       <button class="link-btn" data-modal="terms">Terms of Use</button>
       <button class="link-btn" data-modal="privacy">Privacy Policy</button>
+      <button class="link-btn" data-modal="disclaimer">Disclaimer &amp; Limitations</button>
     </div>
     <div class="footer-copy">&copy; 2026 DashCraftCo &middot; PaydaySuperGuard</div>
-    <div class="footer-disclaimer">
-      Illustrative prototype only &mdash; not tax, super, or financial advice. Business-day counting uses each employee's state 2026 public holiday calendar (national holidays plus major state-specific dates published by the Fair Work Ombudsman; some regional-only observances are not included). Estimated SGC is calculated as shortfall + daily-compounding notional earnings at the entered GIC rate + the selected admin uplift rate &mdash; it does not model every ATO discretion or timing rule. Confirm real obligations with the ATO or a registered tax/BAS practitioner before relying on any figure here.
-    </div>
   </div>
 </footer>
 
@@ -496,7 +526,7 @@
   <div class="modal">
     <button class="modal-close" data-close>&times;</button>
     <h2>About PaydaySuperGuard</h2>
-    <p>PaydaySuperGuard is an independent review tool that checks payroll super guarantee (SG) payments against Australia's Payday Super deadline, which took effect 1 July 2026. Upload a payroll export and it flags each payment as on time, pending, or late, and estimates the potential Super Guarantee Charge (SGC) exposure for anything that missed its window.</p>
+    <p>PaydaySuperGuard is a compliance and reconciliation review tool built for accountants, BAS agents, payroll professionals, and small-business advisers. Payday Super applies from 1 July 2026, and super contributions generally need to be received by the employee's fund within 7 business days of payday (longer in some cases, such as new employees or new funds). Upload a payroll export and it reviews every payment, sorts on-time from problem records, and estimates potential Super Guarantee Charge (SGC) exposure — so you can review before it becomes a compliance problem, not after.</p>
     <p>Every check runs as plain date-and-arithmetic logic in your browser &mdash; no artificial intelligence is involved in producing the flags or figures.</p>
     <p>Built by DashCraftCo, an independent maker of practical, privacy-first tools.</p>
   </div>
@@ -530,6 +560,31 @@
     <p>CSV and PDF exports are generated locally and saved directly to your device.</p>
     <h3>Contact</h3>
     <p>Questions about this policy can be sent to <a href="mailto:support@dashcraftco.com">support@dashcraftco.com</a>.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalDisclaimer">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>Disclaimer &amp; Limitations</h2>
+    <p>PaydaySuperGuard is an independent screening and review tool. It is not an ATO product or an approved compliance system.</p>
+    <ul>
+      <li>Results depend entirely on the accuracy and completeness of the payroll data you upload.</li>
+      <li>This tool does not provide tax or legal advice.</li>
+      <li>Estimated SGC exposure is indicative only — a screening calculation, not a substitute for an actual Super Guarantee Charge assessment.</li>
+      <li>Actual SGC obligations can depend on circumstances and information this tool does not capture (for example, ATO discretion, voluntary disclosure timing, or data the ATO holds that isn't in your export).</li>
+      <li>Verify results against current ATO guidance and applicable legislation before relying on them for compliance, reporting, or client advice.</li>
+    </ul>
+
+    <h3>Official references</h3>
+    <p>These are the official ATO pages this tool's logic is based on:</p>
+    <ul>
+      <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/about-payday-super" target="_blank" rel="noopener">About Payday Super</a> — ato.gov.au</li>
+      <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/paying-super-on-payday/payment-deadlines-for-payday-super" target="_blank" rel="noopener">Payment deadlines for Payday Super</a> — ato.gov.au</li>
+      <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/payday-super/missed-or-late-payday-super-payments" target="_blank" rel="noopener">Missed or late Payday Super payments &amp; the super guarantee charge</a> — ato.gov.au</li>
+    </ul>
+
+    <p class="rules-reviewed">Rules last reviewed: August 2026. This date reflects when the tool's logic was last checked against ATO guidance — it does not mean the tool updates automatically. Rules and rates (including the GIC rate, which resets quarterly) can change; always check the official ATO pages above for anything current.</p>
   </div>
 </div>
 
@@ -642,24 +697,25 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
 
       let status, daysLate = 0;
       let sgcShortfall = 0, sgcNotionalEarnings = 0, sgcAdminUplift = 0, sgcTotal = 0;
+      const specialCase = isFirstPayment || fundChange;
 
       if(received){
         if(received.getTime() <= deadline.getTime()){
           status = 'on_time';
         } else {
-          status = 'late';
           daysLate = calendarDiff(deadline, received);
           const sgc = computeSGC(expectedSG, daysLate);
           sgcShortfall = sgc.shortfall; sgcNotionalEarnings = sgc.notional;
           sgcAdminUplift = sgc.uplift; sgcTotal = sgc.total;
+          status = specialCase ? 'review_required' : 'late';
         }
       } else {
         if(TODAY.getTime() > deadline.getTime()){
-          status = 'overdue_pending';
           daysLate = calendarDiff(deadline, TODAY);
           const sgc = computeSGC(expectedSG, daysLate);
           sgcShortfall = sgc.shortfall; sgcNotionalEarnings = sgc.notional;
           sgcAdminUplift = sgc.uplift; sgcTotal = sgc.total;
+          status = specialCase ? 'review_required' : 'missing_unconfirmed';
         } else {
           status = 'pending';
         }
@@ -675,10 +731,11 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
 
   function statusMeta(status){
     switch(status){
-      case 'on_time': return {label:'On time', cls:'ok'};
-      case 'late': return {label:'Late', cls:'danger'};
-      case 'overdue_pending': return {label:'Overdue — not yet received', cls:'danger'};
-      case 'pending': return {label:'Pending — within window', cls:'warn'};
+      case 'on_time': return {label:'ON TIME', cls:'ok'};
+      case 'late': return {label:'LATE', cls:'danger'};
+      case 'missing_unconfirmed': return {label:'MISSING / UNCONFIRMED', cls:'danger'};
+      case 'review_required': return {label:'REVIEW REQUIRED', cls:'review'};
+      case 'pending': return {label:'Not yet due', cls:'warn'};
     }
   }
 
@@ -710,46 +767,74 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
     }
 
     const total = currentRows.length;
+    const employeesReviewed = new Set(currentRows.map(r=>r.employee_id)).size;
     const onTime = currentRows.filter(r=>r.status==='on_time').length;
-    const late = currentRows.filter(r=>r.status==='late'||r.status==='overdue_pending').length;
-    const pending = currentRows.filter(r=>r.status==='pending').length;
-    const totalExposure = currentRows.reduce((s,r)=>s+r.exposure,0);
-    const employeesAffected = new Set(currentRows.filter(r=>r.status==='late'||r.status==='overdue_pending').map(r=>r.employee_id)).size;
+    const late = currentRows.filter(r=>r.status==='late').length;
+    const missing = currentRows.filter(r=>r.status==='missing_unconfirmed').length;
+    const reviewRequired = currentRows.filter(r=>r.status==='review_required').length;
+    const notYetDue = currentRows.filter(r=>r.status==='pending').length;
+    // Review-required rows are excluded from the confident SGC total — they haven't
+    // been established as late, only flagged for manual review.
+    const totalExposure = currentRows.filter(r=>r.status==='late'||r.status==='missing_unconfirmed').reduce((s,r)=>s+r.exposure,0);
+    const reviewRequiredExposure = currentRows.filter(r=>r.status==='review_required').reduce((s,r)=>s+r.exposure,0);
+
+    const paydays = currentRows.map(r=>r.payday.getTime());
+    const periodStart = fmt(new Date(Math.min(...paydays)));
+    const periodEnd = fmt(new Date(Math.max(...paydays)));
 
     const filtered = currentFilter==='all' ? currentRows :
-      currentFilter==='late' ? currentRows.filter(r=>r.status==='late'||r.status==='overdue_pending') :
-      currentFilter==='pending' ? currentRows.filter(r=>r.status==='pending') :
-      currentRows.filter(r=>r.status==='on_time');
+      currentFilter==='exceptions' ? currentRows.filter(r=>r.status==='late'||r.status==='missing_unconfirmed'||r.status==='review_required') :
+      currentFilter==='ontime' ? currentRows.filter(r=>r.status==='on_time') :
+      currentRows.filter(r=>r.status===currentFilter);
 
     content.innerHTML = `
+      <p class="period-line">Payroll period reviewed: <strong>${periodStart} – ${periodEnd}</strong> &middot; Reviewed ${TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'})}</p>
+
       <div class="summary">
         <div class="stat">
-          <div class="label">Payments checked</div>
+          <div class="label">Employees reviewed</div>
+          <div class="value">${employeesReviewed}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Payments reviewed</div>
           <div class="value">${total}</div>
-          <div class="sub">${onTime} on time</div>
+        </div>
+        <div class="stat">
+          <div class="label">On time</div>
+          <div class="value" style="color:var(--ok)">${onTime}</div>
         </div>
         <div class="stat danger">
-          <div class="label">Late / overdue</div>
+          <div class="label">Late</div>
           <div class="value">${late}</div>
-          <div class="sub">${employeesAffected} employee${employeesAffected===1?'':'s'} affected</div>
+        </div>
+        <div class="stat danger">
+          <div class="label">Missing / unconfirmed</div>
+          <div class="value">${missing}</div>
+        </div>
+        <div class="stat review">
+          <div class="label">Review required</div>
+          <div class="value">${reviewRequired}</div>
         </div>
         <div class="stat warn">
-          <div class="label">Pending, within window</div>
-          <div class="value">${pending}</div>
-          <div class="sub">watch these</div>
+          <div class="label">Not yet due</div>
+          <div class="value">${notYetDue}</div>
         </div>
         <div class="stat danger">
           <div class="label">Est. SGC exposure</div>
           <div class="value">${money(totalExposure)}</div>
-          <div class="sub">shortfall + notional earnings + uplift</div>
+          <div class="sub">Indicative only — not an official SGC assessment${reviewRequiredExposure ? `. +${money(reviewRequiredExposure)} in flagged review-required items not included.` : '.'}</div>
         </div>
       </div>
+      <p class="reconcile-note">On time + Late + Missing/unconfirmed + Review required + Not yet due = ${onTime}+${late}+${missing}+${reviewRequired}+${notYetDue} = ${onTime+late+missing+reviewRequired+notYetDue} of ${total} payments reviewed.</p>
 
       <div class="filters">
         <div class="tab ${currentFilter==='all'?'active':''}" data-f="all">All (${total})</div>
-        <div class="tab ${currentFilter==='late'?'active':''}" data-f="late">Late / overdue (${late})</div>
-        <div class="tab ${currentFilter==='pending'?'active':''}" data-f="pending">Pending (${pending})</div>
+        <div class="tab ${currentFilter==='exceptions'?'active':''}" data-f="exceptions">Action required (${late+missing+reviewRequired})</div>
+        <div class="tab ${currentFilter==='late'?'active':''}" data-f="late">Late (${late})</div>
+        <div class="tab ${currentFilter==='missing_unconfirmed'?'active':''}" data-f="missing_unconfirmed">Missing / unconfirmed (${missing})</div>
+        <div class="tab ${currentFilter==='review_required'?'active':''}" data-f="review_required">Review required (${reviewRequired})</div>
         <div class="tab ${currentFilter==='ontime'?'active':''}" data-f="ontime">On time (${onTime})</div>
+        <div class="tab ${currentFilter==='pending'?'active':''}" data-f="pending">Not yet due (${notYetDue})</div>
       </div>
 
       <div class="table-wrap">
@@ -763,7 +848,7 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
               <th>Timeline</th>
               <th>Status</th>
               <th>Expected SG</th>
-              <th>Est. SGC</th>
+              <th>Est. SGC<br><span class="th-note">indicative</span></th>
             </tr>
           </thead>
           <tbody>
@@ -855,17 +940,47 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
     }
   });
 
+  function summaryFigures(){
+    const total = currentRows.length;
+    const employeesReviewed = new Set(currentRows.map(r=>r.employee_id)).size;
+    const onTime = currentRows.filter(r=>r.status==='on_time').length;
+    const late = currentRows.filter(r=>r.status==='late').length;
+    const missing = currentRows.filter(r=>r.status==='missing_unconfirmed').length;
+    const reviewRequired = currentRows.filter(r=>r.status==='review_required').length;
+    const totalExposure = currentRows.filter(r=>r.status==='late'||r.status==='missing_unconfirmed').reduce((s,r)=>s+r.exposure,0);
+    const paydays = currentRows.map(r=>r.payday.getTime());
+    const periodStart = fmt(new Date(Math.min(...paydays)));
+    const periodEnd = fmt(new Date(Math.max(...paydays)));
+    const reviewDate = TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'});
+    return {total, employeesReviewed, onTime, late, missing, reviewRequired, totalExposure, periodStart, periodEnd, reviewDate};
+  }
+
   document.getElementById('exportCsv').addEventListener('click', ()=>{
     try{
-      const headers = ['employee_id','employee_name','payday','deadline','received','status','days_late',
+      const s = summaryFigures();
+      const summaryLines = [
+        'PaydaySuperGuard — Review Summary',
+        `Review date,${s.reviewDate}`,
+        `Payroll period reviewed,${s.periodStart} to ${s.periodEnd}`,
+        `Employees reviewed,${s.employeesReviewed}`,
+        `Payments reviewed,${s.total}`,
+        `On time,${s.onTime}`,
+        `Late,${s.late}`,
+        `Missing / unconfirmed,${s.missing}`,
+        `Review required,${s.reviewRequired}`,
+        `Estimated potential SGC exposure,${money(s.totalExposure)} (indicative only — not an official SGC assessment)`,
+        '',
+        'Detailed records',
+      ];
+      const headers = ['employee_id','employee_name','state','payday','deadline','received','status','days_late',
         'expected_sg','sgc_shortfall','sgc_notional_earnings','sgc_admin_uplift','sgc_total_estimate'];
       const rows = currentRows.map(r=>[
-        r.employee_id, r.employee_name, r.payday.toISOString().slice(0,10),
+        r.employee_id, r.employee_name, r.state||'', r.payday.toISOString().slice(0,10),
         r.deadline.toISOString().slice(0,10), r.received ? r.received.toISOString().slice(0,10) : '',
         statusMeta(r.status).label, r.daysLate, r.expectedSG,
         r.sgcShortfall||0, r.sgcNotionalEarnings||0, r.sgcAdminUplift||0, r.exposure||0
       ].join(','));
-      const csv = headers.join(',')+'\n'+rows.join('\n');
+      const csv = summaryLines.join('\n')+'\n'+headers.join(',')+'\n'+rows.join('\n');
       const blob = new Blob([csv], {type:'text/csv'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -884,7 +999,7 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
   }
 
   function buildPrintableDoc(){
-    const generated = TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'});
+    const s = summaryFigures();
     const rows = currentRows.map(r=>{
       const meta = statusMeta(r.status);
       return `<tr>
@@ -898,23 +1013,36 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
         <td>${r.exposure ? money(r.exposure) : '—'}</td>
       </tr>`;
     }).join('');
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PaydaySuperGuard summary</title>
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PaydaySuperGuard — Review Summary</title>
     <style>
       body{font-family:Georgia,serif;color:#16211F;padding:36px;max-width:900px;margin:0 auto;}
       h1{font-size:22px;margin-bottom:4px;}
       p.meta{font-family:-apple-system,sans-serif;font-size:12px;color:#5B6A67;margin-top:0;}
+      .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;font-family:-apple-system,sans-serif;}
+      .summary-grid div{border:1px solid #E1E6E4;border-radius:8px;padding:10px 12px;}
+      .summary-grid .label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#5B6A67;}
+      .summary-grid .value{font-size:18px;font-weight:600;margin-top:3px;}
       table{width:100%;border-collapse:collapse;margin-top:20px;font-family:-apple-system,sans-serif;font-size:12px;}
       th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #E1E6E4;}
       th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#5B6A67;}
-      p.disclaimer{font-family:-apple-system,sans-serif;font-size:10.5px;color:#5B6A67;margin-top:24px;line-height:1.6;}
+      p.disclaimer{font-family:-apple-system,sans-serif;font-size:10.5px;color:#5B6A67;margin-top:24px;line-height:1.6;border-top:1px solid #E1E6E4;padding-top:14px;}
     </style></head><body>
-      <h1>PaydaySuperGuard — Payday Super review summary</h1>
-      <p class="meta">Generated ${generated}. Open this file in your browser, then use Print &rarr; Save as PDF.</p>
+      <h1>PaydaySuperGuard — Payday Super Review Summary</h1>
+      <p class="meta">Review date: ${s.reviewDate} &nbsp;&middot;&nbsp; Payroll period reviewed: ${s.periodStart} – ${s.periodEnd}</p>
+      <div class="summary-grid">
+        <div><div class="label">Employees reviewed</div><div class="value">${s.employeesReviewed}</div></div>
+        <div><div class="label">Payments reviewed</div><div class="value">${s.total}</div></div>
+        <div><div class="label">On time</div><div class="value">${s.onTime}</div></div>
+        <div><div class="label">Late</div><div class="value">${s.late}</div></div>
+        <div><div class="label">Missing / unconfirmed</div><div class="value">${s.missing}</div></div>
+        <div><div class="label">Review required</div><div class="value">${s.reviewRequired}</div></div>
+      </div>
+      <p class="meta"><strong>Estimated potential SGC exposure: ${money(s.totalExposure)}</strong> — indicative only, not an official SGC assessment.</p>
       <table>
         <thead><tr><th>Employee</th><th>State</th><th>Payday</th><th>Deadline</th><th>Received</th><th>Status</th><th>Expected SG</th><th>Est. SGC</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <p class="disclaimer">Illustrative prototype only — not tax, super, or financial advice. Confirm real obligations with the ATO or a registered tax/BAS practitioner before relying on any figure here.</p>
+      <p class="disclaimer">PaydaySuperGuard is an independent screening/review tool and is not an ATO product or approved compliance system. Results depend on the accuracy and completeness of the uploaded data. This tool does not provide tax or legal advice. Estimated SGC exposure is indicative only and is not a substitute for an actual SGC assessment. Actual SGC obligations can depend on circumstances and information not captured by this tool. Verify results against current ATO guidance and applicable legislation before relying on them for compliance, reporting, or client advice. Rules last reviewed: August 2026.</p>
     </body></html>`;
   }
 
