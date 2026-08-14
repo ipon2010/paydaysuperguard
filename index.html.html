@@ -11,28 +11,77 @@
 
     --bg:#F2F4F3;
     --surface:#FFFFFF;
-    --ink:#16211F;
-    --ink-soft:#5B6A67;
-    --line:#E1E6E4;
-    --teal:#1F5C5A;
+    --ink:#151F1D;
+    --ink-soft:#495650;
+    --line:#DEE4E2;
+    --teal:#1B5451;
     --teal-soft:#E7EFEE;
-    --teal-deep:#12302F;
-    --ok:#2E7D5B;
+    --teal-deep:#0F2B29;
+    --ok:#256B4E;
     --ok-soft:#E5F2EA;
-    --warn:#A8721F;
+    --warn:#93611A;
     --warn-soft:#FAF0DE;
-    --danger:#AE4531;
+    --danger:#9B3B29;
     --danger-soft:#F8EAE6;
+    --review:#5B3EA6;
+    --review-soft:#EFEAF6;
+    --track:#EEF1F0;
+    --hover:#FAFBFA;
+    --shadow: 0 1px 2px rgba(15,30,28,.05), 0 6px 20px rgba(15,30,28,.04);
+  }
+  [data-theme="dark"]{
+    --bg:#0E1513;
+    --surface:#17211E;
+    --ink:#EDF3F1;
+    --ink-soft:#9FB3AD;
+    --line:#2B3835;
+    --teal:#5FB3AB;
+    --teal-soft:#1B302D;
+    --teal-deep:#0A1917;
+    --ok:#5FC090;
+    --ok-soft:#173026;
+    --warn:#E0A855;
+    --warn-soft:#332512;
+    --danger:#E88371;
+    --danger-soft:#361E1A;
+    --review:#B49AEE;
+    --review-soft:#271F3B;
+    --track:#22302C;
+    --hover:#1C2724;
+    --shadow: 0 1px 2px rgba(0,0,0,.25), 0 6px 20px rgba(0,0,0,.25);
   }
   *{box-sizing:border-box;}
+  html{color-scheme:light;}
+  html[data-theme="dark"]{color-scheme:dark;}
   body{
     margin:0;
     background:var(--bg);
     color:var(--ink);
     font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
+    transition:background .2s ease, color .2s ease;
   }
-  .app{max-width:1040px;margin:0 auto;padding:44px 22px 0;}
+  .app{max-width:1080px;margin:0 auto;padding:44px 22px 0;}
+
+  .theme-toggle{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:100px;
+    padding:6px 8px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .theme-toggle:hover{color:var(--teal);border-color:var(--teal);}
 
   /* ---------- Hero ---------- */
   .hero{
@@ -95,6 +144,7 @@
     border:1px solid var(--line);
     border-radius:12px;
     padding:14px 16px;
+    box-shadow:var(--shadow);
   }
   .file-label{
     border:1px dashed #C4D0CD;
@@ -176,35 +226,70 @@
   /* ---------- Summary ---------- */
   .summary{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
-    gap:1px;
-    margin:20px 0;
-    background:var(--line);
-    border:1px solid var(--line);
-    border-radius:12px;
-    overflow:hidden;
+    grid-template-columns:repeat(2, 1fr);
+    gap:10px;
+    margin-top:20px;
   }
+  @media (min-width:540px){ .summary{grid-template-columns:repeat(3, 1fr);} }
+  @media (min-width:760px){ .summary{grid-template-columns:repeat(4, 1fr);} }
+  @media (min-width:980px){ .summary{grid-template-columns:repeat(7, 1fr);} }
   .stat{
     background:var(--surface);
-    padding:18px 20px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+    box-shadow:var(--shadow);
+    transition:background .2s ease, border-color .2s ease;
   }
   .stat .label{
     font-family:var(--font-mono);
-    font-size:10.5px;
-    letter-spacing:.07em;
+    font-size:10px;
+    letter-spacing:.06em;
     text-transform:uppercase;
     color:var(--ink-soft);
     margin-bottom:8px;
+    line-height:1.4;
   }
   .stat .value{
     font-family:var(--font-display);
-    font-size:26px;
+    font-size:24px;
     font-weight:600;
   }
+
+  .stat-highlight{
+    margin-top:12px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:4px solid var(--danger);
+    border-radius:12px;
+    padding:16px 20px;
+    box-shadow:var(--shadow);
+    display:flex;
+    align-items:baseline;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .highlight-main .label{
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .highlight-main .value{
+    font-family:var(--font-display);
+    font-size:28px;
+    font-weight:600;
+    color:var(--danger);
+  }
+  .highlight-note{
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    max-width:420px;
+  }
   .stat .sub{font-size:11.5px;color:var(--ink-soft);margin-top:5px;}
-  .stat.danger .value{color:var(--danger);}
-  .stat.warn .value{color:var(--warn);}
-  .stat.review .value{color:#6647A6;}
   .period-line{
     font-size:12.5px;
     color:var(--ink-soft);
@@ -243,6 +328,7 @@
     border:1px solid var(--line);
     border-radius:12px;
     overflow-x:auto;
+    box-shadow:var(--shadow);
   }
   table{border-collapse:collapse;width:100%;min-width:820px;}
   thead th{
@@ -267,7 +353,7 @@
     white-space:nowrap;
   }
   tbody tr:last-child td{border-bottom:none;}
-  tbody tr:hover{background:#FAFBFA;}
+  tbody tr:hover{background:var(--hover);}
   .name{font-weight:600;}
   .sub-id{display:block;font-size:10.5px;color:var(--ink-soft);font-family:var(--font-mono);margin-top:1px;}
   .mono{font-family:var(--font-mono);font-size:12.5px;}
@@ -285,13 +371,13 @@
   .badge.ok{background:var(--ok-soft);color:var(--ok);}
   .badge.warn{background:var(--warn-soft);color:var(--warn);}
   .badge.danger{background:var(--danger-soft);color:var(--danger);}
-  .badge.review{background:#EFEAF6;color:#6647A6;}
+  .badge.review{background:var(--review-soft);color:var(--review);}
   .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
 
   .clock{
     width:130px;
     height:8px;
-    background:#EEF1F0;
+    background:var(--track);
     border-radius:5px;
     position:relative;
   }
@@ -423,9 +509,58 @@
   }
 
   @media (max-width:640px){
-    .summary{grid-template-columns:1fr 1fr;}
     .hero h1{font-size:26px;}
-    .app{padding:28px 16px 0;}
+    .app{padding:64px 16px 0;}
+    .theme-toggle{top:12px;right:12px;}
+  }
+
+  @media (max-width:900px){
+    .table-wrap{overflow-x:visible;border:none;background:none;box-shadow:none;}
+    table, thead, tbody, tr, td{display:block;width:100%;}
+    thead{display:none;}
+    tbody tr{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      padding:14px 16px;
+      margin-bottom:12px;
+    }
+    tbody tr:hover{background:var(--surface);}
+    tbody td{
+      border-bottom:1px solid var(--line);
+      padding:9px 0;
+      white-space:normal;
+    }
+    tbody td:last-child{border-bottom:none;}
+    tbody td[data-label]:not([data-col="timeline"]){
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    tbody td[data-label]:not([data-col="timeline"])::before{
+      content:attr(data-label);
+      font-family:var(--font-mono);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--ink-soft);
+      flex-shrink:0;
+    }
+    td[data-col="employee"]{padding-bottom:10px;}
+    td[data-col="timeline"]{padding-top:6px;}
+    td[data-col="timeline"]::before{
+      content:"Timeline";
+      display:block;
+      font-family:var(--font-mono);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--ink-soft);
+      margin-bottom:6px;
+    }
+    .clock{width:100%;}
   }
 
   @media print{
@@ -443,6 +578,9 @@
 </style>
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+  <span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span>
+</button>
 <div class="app">
 
   <div class="hero">
@@ -590,6 +728,32 @@
 
 <script>
 (function(){
+  // Theme toggle. Tries to remember the choice via localStorage; if that's
+  // unavailable (e.g. a restricted preview sandbox), it just falls back to
+  // an in-memory default for this session instead of breaking.
+  function getSavedTheme(){
+    try{ return localStorage.getItem('psg-theme'); }catch(e){ return null; }
+  }
+  function saveTheme(t){
+    try{ localStorage.setItem('psg-theme', t); }catch(e){ /* ignore */ }
+  }
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    const icon = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if(icon && label){
+      if(t === 'dark'){ icon.textContent = '☀️'; label.textContent = 'Light'; }
+      else { icon.textContent = '🌙'; label.textContent = 'Dark'; }
+    }
+  }
+  let currentTheme = getSavedTheme() || 'light';
+  applyTheme(currentTheme);
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
+    saveTheme(currentTheme);
+  });
+
   const TODAY = new Date('2026-08-13T00:00:00');
 
   const NATIONAL_2026 = ['2026-01-01','2026-01-26','2026-04-03','2026-04-06','2026-04-25','2026-12-25'];
@@ -803,28 +967,32 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
           <div class="label">On time</div>
           <div class="value" style="color:var(--ok)">${onTime}</div>
         </div>
-        <div class="stat danger">
+        <div class="stat">
           <div class="label">Late</div>
-          <div class="value">${late}</div>
+          <div class="value" style="color:var(--danger)">${late}</div>
         </div>
-        <div class="stat danger">
+        <div class="stat">
           <div class="label">Missing / unconfirmed</div>
-          <div class="value">${missing}</div>
+          <div class="value" style="color:var(--danger)">${missing}</div>
         </div>
-        <div class="stat review">
+        <div class="stat">
           <div class="label">Review required</div>
-          <div class="value">${reviewRequired}</div>
+          <div class="value" style="color:var(--review)">${reviewRequired}</div>
         </div>
-        <div class="stat warn">
+        <div class="stat">
           <div class="label">Not yet due</div>
-          <div class="value">${notYetDue}</div>
-        </div>
-        <div class="stat danger">
-          <div class="label">Est. SGC exposure</div>
-          <div class="value">${money(totalExposure)}</div>
-          <div class="sub">Indicative only — not an official SGC assessment${reviewRequiredExposure ? `. +${money(reviewRequiredExposure)} in flagged review-required items not included.` : '.'}</div>
+          <div class="value" style="color:var(--warn)">${notYetDue}</div>
         </div>
       </div>
+
+      <div class="stat-highlight">
+        <div class="highlight-main">
+          <div class="label">Est. SGC exposure</div>
+          <div class="value">${money(totalExposure)}</div>
+        </div>
+        <div class="highlight-note">Indicative only — not an official SGC assessment${reviewRequiredExposure ? `. An additional ${money(reviewRequiredExposure)} across flagged review-required items is not included in this total.` : '.'}</div>
+      </div>
+
       <p class="reconcile-note">On time + Late + Missing/unconfirmed + Review required + Not yet due = ${onTime}+${late}+${missing}+${reviewRequired}+${notYetDue} = ${onTime+late+missing+reviewRequired+notYetDue} of ${total} payments reviewed.</p>
 
       <div class="filters">
@@ -856,14 +1024,14 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
               const meta = statusMeta(r.status);
               return `
                 <tr>
-                  <td><span class="name">${r.employee_name}</span><span class="sub-id">${r.employee_id}${r.isFirstPayment?' · new':''}${r.fundChange?' · fund change':''} · ${r.state||'—'}</span></td>
-                  <td class="mono">${fmt(r.payday)}</td>
-                  <td class="mono">${fmt(r.deadline)}</td>
-                  <td class="mono">${r.received ? fmt(r.received) : '—'}</td>
-                  <td>${renderClock(r)}</td>
-                  <td><span class="badge ${meta.cls}"><span class="dot"></span>${meta.label}${r.daysLate?` · ${r.daysLate}d`:''}</span></td>
-                  <td class="mono">${money(r.expectedSG)}</td>
-                  <td class="mono">${r.exposure ? money(r.exposure) : '—'}</td>
+                  <td data-col="employee"><span class="name">${r.employee_name}</span><span class="sub-id">${r.employee_id}${r.isFirstPayment?' · new':''}${r.fundChange?' · fund change':''} · ${r.state||'—'}</span></td>
+                  <td class="mono" data-label="Payday">${fmt(r.payday)}</td>
+                  <td class="mono" data-label="Deadline">${fmt(r.deadline)}</td>
+                  <td class="mono" data-label="Received">${r.received ? fmt(r.received) : '—'}</td>
+                  <td data-col="timeline" data-label="Timeline">${renderClock(r)}</td>
+                  <td data-label="Status"><span class="badge ${meta.cls}"><span class="dot"></span>${meta.label}${r.daysLate?` · ${r.daysLate}d`:''}</span></td>
+                  <td class="mono" data-label="Expected SG">${money(r.expectedSG)}</td>
+                  <td class="mono" data-label="Est. SGC (indicative)">${r.exposure ? money(r.exposure) : '—'}</td>
                 </tr>
               `;
             }).join('')}
