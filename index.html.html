@@ -223,6 +223,66 @@
     color:var(--teal);
   }
 
+  /* ---------- Public holidays panel ---------- */
+  .holiday-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-top:12px;
+    max-height:220px;
+    overflow-y:auto;
+  }
+  .holiday-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12.5px;
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+  }
+  .holiday-item .hi-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .holiday-item .hi-date{font-family:var(--font-mono);color:var(--ink-soft);min-width:74px;}
+  .holiday-badge{
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    padding:2px 7px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .holiday-badge.official{background:var(--teal-soft);color:var(--teal);}
+  .holiday-badge.custom{background:var(--warn-soft);color:var(--warn);}
+  .holiday-remove{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;
+    font-size:15px;line-height:1;padding:2px 6px;border-radius:6px;
+  }
+  .holiday-remove:hover{color:var(--danger);background:var(--danger-soft);}
+  .adj-tag{
+    display:inline-block;
+    margin-left:6px;
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    color:var(--warn);
+    border:1px solid var(--warn);
+    border-radius:100px;
+    padding:1px 6px;
+    white-space:nowrap;
+    cursor:help;
+  }
+  .new-holiday-name{
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:var(--font-body);
+    font-size:12px;
+    color:var(--ink);
+    width:170px;
+  }
+
   /* ---------- Summary ---------- */
   .summary{
     display:grid;
@@ -630,6 +690,34 @@
     </p>
   </div>
 
+  <div class="controls settings-block" id="holidaysPanel">
+    <div class="settings-row">
+      <label class="setting">
+        <span>Public holidays for</span>
+        <select id="holidayStateSelect">
+          <option value="NSW">NSW</option>
+          <option value="VIC">VIC</option>
+          <option value="QLD">QLD</option>
+          <option value="WA">WA</option>
+          <option value="SA">SA</option>
+          <option value="TAS">TAS</option>
+          <option value="ACT">ACT</option>
+          <option value="NT">NT</option>
+        </select>
+      </label>
+    </div>
+    <p class="settings-help">This is the exact list of dates used to calculate deadlines for the selected state — the same list every payment above is checked against. Dates marked <strong>Official source</strong> come from the Fair Work Ombudsman (see Disclaimer &amp; Limitations for the links to verify each state). If a new holiday is declared after that source was last checked, add it below — it applies immediately to every affected row, and any deadline it changes is marked <span class="adj-tag">adj.</span> in the table.</p>
+    <div id="holidayList" class="holiday-list"></div>
+    <div class="settings-row" style="margin-top:12px;">
+      <label class="setting">
+        <span>Add holiday</span>
+        <input type="date" id="newHolidayDate" />
+      </label>
+      <input type="text" id="newHolidayName" class="new-holiday-name" placeholder="Holiday name (optional)" />
+      <button class="btn-ghost" id="addHolidayBtn">+ Add to selected state</button>
+    </div>
+  </div>
+
   <div class="controls" id="exportRow" style="display:none;">
     <button class="btn-ghost" id="exportCsv">Export Review Summary (CSV)</button>
     <button class="btn-ghost" id="exportPdf">Export Review Summary (PDF)</button>
@@ -722,6 +810,21 @@
       <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/payday-super/missed-or-late-payday-super-payments" target="_blank" rel="noopener">Missed or late Payday Super payments &amp; the super guarantee charge</a> — ato.gov.au</li>
     </ul>
 
+    <h3>Public holiday data</h3>
+    <p>Deadline calculations skip weekends and the public holidays listed below for each state/territory, sourced from the Fair Work Ombudsman (Fair Work Act 2009, s.115). Regional or local-area holidays (for example, Royal Hobart Show, Royal Queensland Show outside Brisbane, or Easter Tuesday for Tasmanian public service) and evening-only part-day holidays (for example, Christmas Eve) are deliberately not applied, since they don't create a statewide non-business day. Public holiday data last verified: 15 August 2026.</p>
+    <ul>
+      <li><a href="https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays" target="_blank" rel="noopener">2026 public holidays (all states)</a> — fairwork.gov.au</li>
+      <li><a href="https://www.nsw.gov.au/about-nsw/public-holidays" target="_blank" rel="noopener">Verify NSW public holidays</a></li>
+      <li><a href="https://business.vic.gov.au/business-information/public-holidays" target="_blank" rel="noopener">Verify VIC public holidays</a></li>
+      <li><a href="https://www.qld.gov.au/recreation/travel/holidays/public" target="_blank" rel="noopener">Verify QLD public holidays</a></li>
+      <li><a href="https://www.commerce.wa.gov.au/labour-relations/public-holidays-western-australia" target="_blank" rel="noopener">Verify WA public holidays</a></li>
+      <li><a href="https://www.safework.sa.gov.au/resources/public-holidays" target="_blank" rel="noopener">Verify SA public holidays</a></li>
+      <li><a href="https://worksafe.tas.gov.au/topics/laws-and-compliance/public-holidays" target="_blank" rel="noopener">Verify TAS public holidays</a></li>
+      <li><a href="https://www.cmtedd.act.gov.au/communication/holidays" target="_blank" rel="noopener">Verify ACT public holidays</a></li>
+      <li><a href="https://nt.gov.au/nt-public-holidays" target="_blank" rel="noopener">Verify NT public holidays</a></li>
+    </ul>
+    <p style="font-size:12px;">Note: Victoria's "Friday before the AFL Grand Final" public holiday is not yet included — the 2026 date is typically confirmed closer to finals season (around September) and should be added to VIC's holiday list once announced.</p>
+
     <p class="rules-reviewed">Rules last reviewed: August 2026. This date reflects when the tool's logic was last checked against ATO guidance — it does not mean the tool updates automatically. Rules and rates (including the GIC rate, which resets quarterly) can change; always check the official ATO pages above for anything current.</p>
   </div>
 </div>
@@ -756,21 +859,75 @@
 
   const TODAY = new Date('2026-08-13T00:00:00');
 
-  const NATIONAL_2026 = ['2026-01-01','2026-01-26','2026-04-03','2026-04-06','2026-04-25','2026-12-25'];
+  // Source: Fair Work Ombudsman, "2026 public holidays" (Fair Work Act 2009, s.115)
+  // https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays
+  // Last verified: 15 August 2026. Cross-checked against each state/territory
+  // government page (linked in the Disclaimer modal's "Public holiday data" section).
+  // Deliberately excludes: regional/local-only holidays and evening-only part-day
+  // holidays — see the Disclaimer modal for why. VIC's "Friday before AFL Grand
+  // Final" is not yet confirmed for 2026 and is not included — add once announced.
+  const NATIONAL_2026 = [
+    {date:'2026-01-01', name:"New Year's Day"},
+    {date:'2026-01-26', name:'Australia Day'},
+    {date:'2026-04-03', name:'Good Friday'},
+    {date:'2026-04-06', name:'Easter Monday'},
+    {date:'2026-04-25', name:'Anzac Day'},
+    {date:'2026-12-25', name:'Christmas Day'},
+  ];
   const HOLIDAYS_BY_STATE = {
-    NSW: [...NATIONAL_2026,'2026-06-08','2026-10-05','2026-12-28'],
-    VIC: [...NATIONAL_2026,'2026-03-09','2026-06-08','2026-11-03','2026-12-28'],
-    QLD: [...NATIONAL_2026,'2026-05-04','2026-10-05','2026-12-28'],
-    WA:  [...NATIONAL_2026,'2026-03-02','2026-04-27','2026-06-01','2026-09-28','2026-12-28'],
-    SA:  [...NATIONAL_2026,'2026-03-09','2026-06-08','2026-10-05','2026-12-28'],
-    TAS: [...NATIONAL_2026,'2026-03-09','2026-06-08','2026-12-28'],
-    ACT: [...NATIONAL_2026,'2026-03-09','2026-04-27','2026-06-01','2026-06-08','2026-10-05','2026-12-28'],
-    NT:  [...NATIONAL_2026,'2026-05-04','2026-06-08','2026-08-03','2026-12-28'],
+    NSW: [...NATIONAL_2026, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-10-05',name:'Labour Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    VIC: [...NATIONAL_2026, {date:'2026-03-09',name:'Labour Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-11-03',name:'Melbourne Cup'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    QLD: [...NATIONAL_2026, {date:'2026-05-04',name:'Labour Day'}, {date:'2026-10-05',name:"King's Birthday"}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    WA:  [...NATIONAL_2026, {date:'2026-03-02',name:'Labour Day'}, {date:'2026-04-27',name:'Additional public holiday (Anzac Day)'}, {date:'2026-06-01',name:'Western Australia Day'}, {date:'2026-09-28',name:"King's Birthday"}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    SA:  [...NATIONAL_2026, {date:'2026-03-09',name:'Adelaide Cup Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-10-05',name:'Labour Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    TAS: [...NATIONAL_2026, {date:'2026-03-09',name:'Eight Hours Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-12-28',name:'Boxing Day (observed)'}],
+    ACT: [...NATIONAL_2026, {date:'2026-03-09',name:'Canberra Day'}, {date:'2026-04-27',name:'Anzac Day (observed)'}, {date:'2026-06-01',name:'Reconciliation Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-10-05',name:'Labour Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    NT:  [...NATIONAL_2026, {date:'2026-05-04',name:'May Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-08-03',name:'Picnic Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
   };
+
+  // Custom (user-added) holidays — for a holiday declared after the official
+  // source above was last checked. Stored in localStorage the same way the
+  // theme toggle is; falls back to in-memory only if storage is unavailable.
+  function getCustomHolidays(){
+    try{ const raw = localStorage.getItem('psg-custom-holidays'); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveCustomHolidays(obj){
+    try{ localStorage.setItem('psg-custom-holidays', JSON.stringify(obj)); }catch(e){ /* ignore */ }
+  }
+  let customHolidays = getCustomHolidays();
+
+  function addCustomHoliday(state, date, name){
+    const key = (state||'').toUpperCase().trim();
+    if(!key || !date) return;
+    if(!customHolidays[key]) customHolidays[key] = [];
+    if(customHolidays[key].some(h=>h.date===date)) return; // no duplicate dates
+    customHolidays[key].push({date, name: (name||'').trim() || 'Added by you'});
+    saveCustomHolidays(customHolidays);
+  }
+  function removeCustomHoliday(state, date){
+    const key = (state||'').toUpperCase().trim();
+    if(!customHolidays[key]) return;
+    customHolidays[key] = customHolidays[key].filter(h=>h.date!==date);
+    saveCustomHolidays(customHolidays);
+  }
+
+  // Full list for display in the Public holidays panel — official + custom,
+  // each tagged with its source so nothing is hidden.
+  function holidayListFor(state){
+    const key = (state||'').toUpperCase().trim();
+    const official = (HOLIDAYS_BY_STATE[key] || NATIONAL_2026).map(h=>({date:h.date, name:h.name, source:'official'}));
+    const custom = (customHolidays[key]||[]).map(h=>({date:h.date, name:h.name, source:'custom'}));
+    return [...official, ...custom].sort((a,b)=> a.date < b.date ? -1 : (a.date > b.date ? 1 : 0));
+  }
+
+  // Set of date strings only — this is what the deadline math actually
+  // consumes (isBusinessDay / addBusinessDays below are unchanged).
   function holidaySetFor(state){
     const key = (state||'').toUpperCase().trim();
-    const list = HOLIDAYS_BY_STATE[key] || NATIONAL_2026;
-    return new Set(list);
+    const official = (HOLIDAYS_BY_STATE[key] || NATIONAL_2026).map(h=>h.date);
+    const custom = (customHolidays[key]||[]).map(h=>h.date);
+    return new Set([...official, ...custom]);
   }
 
   const SAMPLE_CSV =
@@ -849,6 +1006,11 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
       const windowDays = (isFirstPayment || fundChange) ? 20 : 7;
       const holidays = holidaySetFor(r.state);
       const deadline = addBusinessDays(payday, windowDays, holidays);
+      const stateKey = (r.state||'').toUpperCase().trim();
+      const customAdjusted = (customHolidays[stateKey]||[]).some(h=>{
+        const hd = new Date(h.date);
+        return hd.getTime() > payday.getTime() && hd.getTime() <= deadline.getTime();
+      });
 
       const gross = parseFloat(r.gross_wages)||0;
       const sacrifice = parseFloat(r.salary_sacrifice_super)||0;
@@ -887,7 +1049,7 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
 
       return {
         ...r, payday, deadline, received, windowDays, isFirstPayment, fundChange,
-        qualifyingEarnings, expectedSG, paidSG, status, daysLate,
+        qualifyingEarnings, expectedSG, paidSG, status, daysLate, customAdjusted,
         sgcShortfall, sgcNotionalEarnings, sgcAdminUplift, exposure: sgcTotal
       };
     });
@@ -1026,7 +1188,7 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
                 <tr>
                   <td data-col="employee"><span class="name">${r.employee_name}</span><span class="sub-id">${r.employee_id}${r.isFirstPayment?' · new':''}${r.fundChange?' · fund change':''} · ${r.state||'—'}</span></td>
                   <td class="mono" data-label="Payday">${fmt(r.payday)}</td>
-                  <td class="mono" data-label="Deadline">${fmt(r.deadline)}</td>
+                  <td class="mono" data-label="Deadline">${fmt(r.deadline)}${r.customAdjusted ? '<span class="adj-tag" title="This deadline reflects a holiday you added manually, not the official source list">adj.</span>' : ''}</td>
                   <td class="mono" data-label="Received">${r.received ? fmt(r.received) : '—'}</td>
                   <td data-col="timeline" data-label="Timeline">${renderClock(r)}</td>
                   <td data-label="Status"><span class="badge ${meta.cls}"><span class="dot"></span>${meta.label}${r.daysLate?` · ${r.daysLate}d`:''}</span></td>
@@ -1091,6 +1253,49 @@ EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
   document.getElementById('gicRate').addEventListener('input', recompute);
   document.getElementById('gicRate').addEventListener('change', recompute);
   document.getElementById('upliftMode').addEventListener('change', recompute);
+
+  function renderHolidayList(){
+    const state = document.getElementById('holidayStateSelect').value;
+    const list = holidayListFor(state);
+    const el = document.getElementById('holidayList');
+    el.innerHTML = (list.length ? list.map(h=>`
+      <div class="holiday-item">
+        <span class="hi-left">
+          <span class="hi-date">${fmt(new Date(h.date))}</span>
+          <span>${h.name || 'Public holiday'}</span>
+          <span class="holiday-badge ${h.source}">${h.source==='official' ? 'Official source' : 'Added by you'}</span>
+        </span>
+        ${h.source==='custom' ? `<button class="holiday-remove" data-remove-date="${h.date}" title="Remove this holiday">&times;</button>` : ''}
+      </div>
+    `).join('') : '<p class="settings-help">No holidays listed for this state.</p>');
+
+    el.querySelectorAll('[data-remove-date]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        removeCustomHoliday(state, btn.dataset.removeDate);
+        renderHolidayList();
+        recompute();
+      });
+    });
+  }
+
+  document.getElementById('holidayStateSelect').addEventListener('change', renderHolidayList);
+
+  document.getElementById('addHolidayBtn').addEventListener('click', ()=>{
+    const state = document.getElementById('holidayStateSelect').value;
+    const dateInput = document.getElementById('newHolidayDate');
+    const nameInput = document.getElementById('newHolidayName');
+    if(!dateInput.value){
+      alert('Pick a date before adding a holiday.');
+      return;
+    }
+    addCustomHoliday(state, dateInput.value, nameInput.value);
+    dateInput.value = '';
+    nameInput.value = '';
+    renderHolidayList();
+    recompute();
+  });
+
+  renderHolidayList();
 
   document.getElementById('downloadTemplate').addEventListener('click', ()=>{
     try{
