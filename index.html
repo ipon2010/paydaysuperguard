@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PaydaySuperGuard</title>
+<style>
+  :root{
+    --font-display: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+    --bg:#F2F4F3;
+    --surface:#FFFFFF;
+    --ink:#151F1D;
+    --ink-soft:#495650;
+    --line:#DEE4E2;
+    --teal:#1B5451;
+    --teal-soft:#E7EFEE;
+    --teal-deep:#0F2B29;
+    --ok:#256B4E;
+    --ok-soft:#E5F2EA;
+    --warn:#93611A;
+    --warn-soft:#FAF0DE;
+    --danger:#9B3B29;
+    --danger-soft:#F8EAE6;
+    --review:#5B3EA6;
+    --review-soft:#EFEAF6;
+    --track:#EEF1F0;
+    --hover:#FAFBFA;
+    --shadow: 0 1px 2px rgba(15,30,28,.05), 0 6px 20px rgba(15,30,28,.04);
+  }
+  [data-theme="dark"]{
+    --bg:#0E1513;
+    --surface:#17211E;
+    --ink:#EDF3F1;
+    --ink-soft:#9FB3AD;
+    --line:#2B3835;
+    --teal:#5FB3AB;
+    --teal-soft:#1B302D;
+    --teal-deep:#0A1917;
+    --ok:#5FC090;
+    --ok-soft:#173026;
+    --warn:#E0A855;
+    --warn-soft:#332512;
+    --danger:#E88371;
+    --danger-soft:#361E1A;
+    --review:#B49AEE;
+    --review-soft:#271F3B;
+    --track:#22302C;
+    --hover:#1C2724;
+    --shadow: 0 1px 2px rgba(0,0,0,.25), 0 6px 20px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box;}
+  html{color-scheme:light;}
+  html[data-theme="dark"]{color-scheme:dark;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s ease, color .2s ease;
+  }
+  .app{max-width:1080px;margin:0 auto;padding:44px 22px 0;}
+
+  .theme-toggle{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:100px;
+    padding:6px 8px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .theme-toggle:hover{color:var(--teal);border-color:var(--teal);}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:6px 2px 30px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin:0 0 14px;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-size:34px;
+    margin:0 0 14px;
+    font-weight:600;
+    letter-spacing:-.01em;
+    color:var(--teal-deep);
+  }
+  .hero p{
+    max-width:600px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin:0;
+    font-size:15px;
+  }
+  .rule-strip{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+    flex-wrap:wrap;
+  }
+  .rule-chip{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--ink-soft);
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:100px;
+  }
+
+  .rule-chip-privacy{
+    color:var(--teal);
+    border-color:#BFD6D3;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:12px;
+    flex-wrap:wrap;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+    box-shadow:var(--shadow);
+  }
+  .file-label{
+    border:1px dashed #C4D0CD;
+    border-radius:8px;
+    padding:9px 14px;
+    font-size:13px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s;
+  }
+  .file-label:hover{border-color:var(--teal);color:var(--teal);}
+  input[type=file]{display:none;}
+  button{
+    font-family:var(--font-body);
+    font-size:13px;
+    font-weight:600;
+    border-radius:8px;
+    padding:9px 15px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-primary:hover{background:var(--teal-deep);}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink-soft);}
+  .btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+  .controls-note{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-left:auto;
+  }
+  .setting{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .setting input[type=number]{
+    width:68px;
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:var(--font-mono);
+    font-size:12px;
+  }
+  .setting select{
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:var(--font-body);
+    font-size:12px;
+    color:var(--ink);
+  }
+
+  .settings-block{
+    display:block;
+    padding:16px 18px 14px;
+  }
+  .settings-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .settings-help{
+    font-size:12px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:8px 0 0;
+    max-width:640px;
+  }
+  .rate-check-note{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--teal);
+  }
+
+  /* ---------- Public holidays panel ---------- */
+  .holiday-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-top:12px;
+    max-height:220px;
+    overflow-y:auto;
+  }
+  .holiday-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12.5px;
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+  }
+  .holiday-item .hi-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .holiday-item .hi-date{font-family:var(--font-mono);color:var(--ink-soft);min-width:74px;}
+  .holiday-badge{
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    padding:2px 7px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .holiday-badge.official{background:var(--teal-soft);color:var(--teal);}
+  .holiday-badge.custom{background:var(--warn-soft);color:var(--warn);}
+  .holiday-remove{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;
+    font-size:15px;line-height:1;padding:2px 6px;border-radius:6px;
+  }
+  .holiday-remove:hover{color:var(--danger);background:var(--danger-soft);}
+  .adj-tag{
+    display:inline-block;
+    margin-left:6px;
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    color:var(--warn);
+    border:1px solid var(--warn);
+    border-radius:100px;
+    padding:1px 6px;
+    white-space:nowrap;
+    cursor:help;
+  }
+  .new-holiday-name{
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:var(--font-body);
+    font-size:12px;
+    color:var(--ink);
+    width:170px;
+  }
+
+  /* ---------- Summary ---------- */
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:10px;
+    margin-top:20px;
+  }
+  @media (min-width:540px){ .summary{grid-template-columns:repeat(3, 1fr);} }
+  @media (min-width:760px){ .summary{grid-template-columns:repeat(4, 1fr);} }
+  @media (min-width:980px){ .summary{grid-template-columns:repeat(7, 1fr);} }
+  .stat{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+    box-shadow:var(--shadow);
+    transition:background .2s ease, border-color .2s ease;
+  }
+  .stat .label{
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+    line-height:1.4;
+  }
+  .stat .value{
+    font-family:var(--font-display);
+    font-size:24px;
+    font-weight:600;
+  }
+
+  .stat-highlight{
+    margin-top:12px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:4px solid var(--danger);
+    border-radius:12px;
+    padding:16px 20px;
+    box-shadow:var(--shadow);
+    display:flex;
+    align-items:baseline;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .highlight-main .label{
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .highlight-main .value{
+    font-family:var(--font-display);
+    font-size:28px;
+    font-weight:600;
+    color:var(--danger);
+  }
+  .highlight-note{
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    max-width:420px;
+  }
+  .stat .sub{font-size:11.5px;color:var(--ink-soft);margin-top:5px;}
+  .period-line{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 4px;
+  }
+  .reconcile-note{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+
+  /* ---------- Filters ---------- */
+  .filters{
+    display:flex;
+    gap:8px;
+    margin:0 0 14px;
+    flex-wrap:wrap;
+  }
+  .tab{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    padding:7px 13px;
+    border-radius:100px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s;
+  }
+  .tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+  /* ---------- Table ---------- */
+  .table-wrap{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow-x:auto;
+    box-shadow:var(--shadow);
+  }
+  table{border-collapse:collapse;width:100%;min-width:820px;}
+  thead th{
+    text-align:left;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:13px 14px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+    font-weight:500;
+  }
+  .th-note{font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-soft);opacity:.75;}
+
+  tbody td{
+    padding:13px 14px;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--hover);}
+  .name{font-weight:600;}
+  .sub-id{display:block;font-size:10.5px;color:var(--ink-soft);font-family:var(--font-mono);margin-top:1px;}
+  .mono{font-family:var(--font-mono);font-size:12.5px;}
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    font-weight:600;
+    padding:4px 9px;
+    border-radius:100px;
+  }
+  .badge.ok{background:var(--ok-soft);color:var(--ok);}
+  .badge.warn{background:var(--warn-soft);color:var(--warn);}
+  .badge.danger{background:var(--danger-soft);color:var(--danger);}
+  .badge.review{background:var(--review-soft);color:var(--review);}
+  .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+  .clock{
+    width:130px;
+    height:8px;
+    background:var(--track);
+    border-radius:5px;
+    position:relative;
+  }
+  .clock .fill{
+    position:absolute;left:0;top:0;bottom:0;
+    border-radius:5px;
+  }
+  .clock .fill.ok{background:var(--ok);}
+  .clock .fill.warn{background:var(--warn);}
+  .clock .fill.danger{background:var(--danger);}
+  .clock .deadline-tick{
+    position:absolute;top:-2px;bottom:-2px;
+    width:1.5px;background:var(--ink);
+    opacity:.3;
+  }
+  .clock-label{font-size:10px;color:var(--ink-soft);margin-top:3px;font-family:var(--font-mono);}
+
+  .empty{
+    padding:70px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{
+    margin-top:56px;
+    background:var(--teal-deep);
+    color:#CBDEDB;
+    padding:34px 22px 26px;
+  }
+  .site-footer-inner{
+    max-width:1040px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .footer-nav{
+    display:flex;
+    justify-content:center;
+    gap:28px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .footer-nav a, .footer-nav button.link-btn{
+    color:#E7F1EF;
+    text-decoration:none;
+    font-size:13.5px;
+    font-family:var(--font-body);
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    font-weight:500;
+  }
+  .footer-nav a:hover, .footer-nav button.link-btn:hover{color:#fff;text-decoration:underline;}
+  .footer-copy{
+    font-size:12px;
+    color:#7FA09C;
+    font-family:var(--font-mono);
+  }
+  .footer-disclaimer{
+    max-width:640px;
+    margin:18px auto 0;
+    font-size:11.5px;
+    line-height:1.6;
+    color:#7FA09C;
+    text-align:center;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(18,29,28,.55);
+    align-items:center;justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);
+    border-radius:14px;
+    max-width:560px;
+    width:100%;
+    max-height:80vh;
+    overflow-y:auto;
+    padding:32px 34px;
+  }
+  .modal h2{
+    font-family:var(--font-display);
+    font-size:22px;
+    color:var(--teal-deep);
+    margin:0 0 16px;
+  }
+  .modal h3{
+    font-family:var(--font-body);
+    font-size:13.5px;
+    color:var(--ink);
+    margin:20px 0 6px;
+  }
+  .modal p, .modal li{
+    font-size:13.5px;
+    line-height:1.65;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .modal ul{margin:0 0 10px;padding-left:20px;}
+  .modal ul li{margin-bottom:6px;}
+  .modal a{color:var(--teal);}
+  .rules-reviewed{
+    font-size:12px;
+    color:var(--ink-soft);
+    background:var(--teal-soft);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-top:16px;
+  }
+  .modal-close{
+    float:right;
+    background:none;border:none;
+    font-size:20px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    line-height:1;
+    padding:0;
+  }
+
+  @media (max-width:640px){
+    .hero h1{font-size:26px;}
+    .app{padding:64px 16px 0;}
+    .theme-toggle{top:12px;right:12px;}
+  }
+
+  @media (max-width:900px){
+    .table-wrap{overflow-x:visible;border:none;background:none;box-shadow:none;}
+    table, thead, tbody, tr, td{display:block;width:100%;}
+    thead{display:none;}
+    tbody tr{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      padding:14px 16px;
+      margin-bottom:12px;
+    }
+    tbody tr:hover{background:var(--surface);}
+    tbody td{
+      border-bottom:1px solid var(--line);
+      padding:9px 0;
+      white-space:normal;
+    }
+    tbody td:last-child{border-bottom:none;}
+    tbody td[data-label]:not([data-col="timeline"]){
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    tbody td[data-label]:not([data-col="timeline"])::before{
+      content:attr(data-label);
+      font-family:var(--font-mono);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--ink-soft);
+      flex-shrink:0;
+    }
+    td[data-col="employee"]{padding-bottom:10px;}
+    td[data-col="timeline"]{padding-top:6px;}
+    td[data-col="timeline"]::before{
+      content:"Timeline";
+      display:block;
+      font-family:var(--font-mono);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--ink-soft);
+      margin-bottom:6px;
+    }
+    .clock{width:100%;}
+  }
+
+  @media print{
+    body{background:#fff;}
+    .hero, .controls, .filters, .site-footer{display:none !important;}
+    .print-header{display:block !important;}
+    .table-wrap{border:none;}
+    table{min-width:0;}
+    thead th, tbody td{padding:6px 8px;font-size:11px;}
+    .clock, .clock-label{display:none;}
+  }
+  .print-header{display:none;padding:10px 0 16px;}
+  .print-header h2{font-family:var(--font-display);margin:0 0 4px;}
+  .print-header p{font-size:12px;color:#555;margin:0;}
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+  <span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span>
+</button>
+<div class="app">
+
+  <div class="hero">
+    <p class="eyebrow">Payday Super &middot; compliance &amp; reconciliation review</p>
+    <h1>PaydaySuperGuard</h1>
+    <p>Review payroll super payments before they become compliance problems. Payday Super applies from 1 July 2026 — super contributions generally need to be received by the employee's fund within 7 business days of payday (longer in some cases, such as new employees or new funds). This tool checks a payroll export against that requirement and surfaces exactly which payments need a closer look.</p>
+    <div class="rule-strip">
+      <span class="rule-chip">7 business days &middot; standard</span>
+      <span class="rule-chip">20 business days &middot; new employee / new fund</span>
+      <span class="rule-chip">12% &middot; qualifying earnings</span>
+      <span class="rule-chip rule-chip-privacy">🔒 Processed locally — never uploaded</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label class="file-label" id="fileLabel">
+      Upload payroll CSV
+      <input type="file" id="fileInput" accept=".csv">
+    </label>
+    <button class="btn-primary" id="loadSample">Load sample data</button>
+    <button class="btn-ghost" id="downloadTemplate">Download CSV template</button>
+    <span class="controls-note" id="fileStatus"></span>
+  </div>
+
+  <div class="controls settings-block" id="settingsPanel">
+    <div class="settings-row">
+      <label class="setting">
+        <span>GIC rate (% p.a.)</span>
+        <input type="number" id="gicRate" step="0.01" value="11.43" />
+      </label>
+      <span class="rate-check-note">Search "ATO general interest charge rates" to check the current figure</span>
+    </div>
+    <p class="settings-help">Defaulted to the July–September 2026 quarter rate. The ATO resets this every quarter — if you're using this tool in a later quarter, click through and update the number.</p>
+
+    <div class="settings-row" style="margin-top:14px;">
+      <label class="setting">
+        <span>Admin uplift basis</span>
+        <select id="upliftMode">
+          <option value="0.6">Full — 60% (default)</option>
+          <option value="0.4">Reduced — 40%</option>
+          <option value="0.36">Reduced — 36%</option>
+        </select>
+      </label>
+    </div>
+    <p class="settings-help">
+      Use <strong>60%</strong> unless one of these clearly applies to this employer: <strong>40%</strong> if there's been no SG assessment or estimate against them in the past 24 months, or <strong>36%</strong> if they voluntarily disclose the shortfall to the ATO within 30 days of the due date, before being contacted about it. If you're not sure which applies, leave it on 60% — it's the safer (higher) assumption to show a client.
+    </p>
+  </div>
+
+  <div class="controls settings-block" id="holidaysPanel">
+    <div class="settings-row">
+      <label class="setting">
+        <span>Public holidays for</span>
+        <select id="holidayStateSelect">
+          <option value="NSW">NSW</option>
+          <option value="VIC">VIC</option>
+          <option value="QLD">QLD</option>
+          <option value="WA">WA</option>
+          <option value="SA">SA</option>
+          <option value="TAS">TAS</option>
+          <option value="ACT">ACT</option>
+          <option value="NT">NT</option>
+        </select>
+      </label>
+    </div>
+    <p class="settings-help">This is the exact list of dates used to calculate deadlines for the selected state — the same list every payment above is checked against. Dates marked <strong>Official source</strong> come from the Fair Work Ombudsman (see Disclaimer &amp; Limitations for the links to verify each state). If a new holiday is declared after that source was last checked, add it below — it applies immediately to every affected row, and any deadline it changes is marked <span class="adj-tag">adj.</span> in the table.</p>
+    <div id="holidayList" class="holiday-list"></div>
+    <div class="settings-row" style="margin-top:12px;">
+      <label class="setting">
+        <span>Add holiday</span>
+        <input type="date" id="newHolidayDate" />
+      </label>
+      <input type="text" id="newHolidayName" class="new-holiday-name" placeholder="Holiday name (optional)" />
+      <button class="btn-ghost" id="addHolidayBtn">+ Add to selected state</button>
+    </div>
+  </div>
+
+  <div class="controls" id="exportRow" style="display:none;">
+    <button class="btn-ghost" id="exportCsv">Export Review Summary (CSV)</button>
+    <button class="btn-ghost" id="exportPdf">Export Review Summary (PDF)</button>
+    <button class="btn-ghost" id="resetTool">Reset</button>
+  </div>
+
+  <div class="print-header">
+    <h2>PaydaySuperGuard — Payday Super review summary</h2>
+    <p id="printDate">Illustrative SGC estimates only, not a substitute for professional advice.</p>
+  </div>
+
+  <div id="content"></div>
+
+  <div style="height:8px"></div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-nav">
+      <button class="link-btn" data-modal="about">About</button>
+      <button class="link-btn" data-modal="terms">Terms of Use</button>
+      <button class="link-btn" data-modal="privacy">Privacy Policy</button>
+      <button class="link-btn" data-modal="disclaimer">Disclaimer &amp; Limitations</button>
+      <button class="link-btn" data-modal="howto">How To Use</button>
+      <a href="mailto:support@dashcraftco.com?subject=PaydaySuperGuard%20Support%20Inquiry">Contact</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 DashCraftCo &middot; PaydaySuperGuard</div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalAbout">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>About PaydaySuperGuard</h2>
+    <p>PaydaySuperGuard is a compliance and reconciliation review tool built for accountants, BAS agents, payroll professionals, and small-business advisers. Payday Super applies from 1 July 2026, and super contributions generally need to be received by the employee's fund within 7 business days of payday (longer in some cases, such as new employees or new funds). Upload a payroll export and it reviews every payment, sorts on-time from problem records, and estimates potential Super Guarantee Charge (SGC) exposure — so you can review before it becomes a compliance problem, not after.</p>
+    <p>Every check runs as plain date-and-arithmetic logic in your browser &mdash; no artificial intelligence is involved in producing the flags or figures.</p>
+    <p>Built by DashCraftCo, an independent maker of practical, privacy-first tools.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalTerms">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>Terms of Use</h2>
+    <p>PaydaySuperGuard is provided free of charge, as-is, with no warranty of any kind, express or implied.</p>
+    <h3>No advice</h3>
+    <p>This tool does not provide tax, superannuation, legal, or financial advice. Outputs, including deadlines and SGC estimates, are illustrative and simplified. They do not account for every rule, exemption, or ATO discretion that may apply to your situation.</p>
+    <h3>Your responsibility</h3>
+    <p>You are responsible for verifying all figures independently and for complying with your actual obligations under Australian law. Confirm anything material with the ATO or a registered tax/BAS practitioner before relying on it.</p>
+    <h3>No liability</h3>
+    <p>DashCraftCo is not liable for any loss or damage arising from use of this tool, including reliance on any calculation, flag, or export it produces.</p>
+    <h3>Changes</h3>
+    <p>These terms may be updated from time to time. Continued use of the tool after changes constitutes acceptance of the updated terms.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalPrivacy">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>Privacy Policy</h2>
+    <h3>Your data stays on your device</h3>
+    <p>Any CSV file you upload is read and processed entirely in your browser. Nothing is sent to a server, stored remotely, or shared with any third party. Closing or refreshing the page clears everything.</p>
+    <h3>No accounts, no tracking</h3>
+    <p>PaydaySuperGuard does not require an account, does not use cookies, and does not run any analytics or tracking scripts.</p>
+    <h3>Exports</h3>
+    <p>CSV and PDF exports are generated locally and saved directly to your device.</p>
+    <h3>Contact</h3>
+    <p>Questions about this policy can be sent to <a href="mailto:support@dashcraftco.com">support@dashcraftco.com</a>.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalDisclaimer">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>Disclaimer &amp; Limitations</h2>
+    <p>PaydaySuperGuard is an independent screening and review tool. It is not an ATO product or an approved compliance system.</p>
+    <ul>
+      <li>Results depend entirely on the accuracy and completeness of the payroll data you upload.</li>
+      <li>This tool does not provide tax or legal advice.</li>
+      <li>Estimated SGC exposure is indicative only — a screening calculation, not a substitute for an actual Super Guarantee Charge assessment.</li>
+      <li>Actual SGC obligations can depend on circumstances and information this tool does not capture (for example, ATO discretion, voluntary disclosure timing, or data the ATO holds that isn't in your export).</li>
+      <li>Verify results against current ATO guidance and applicable legislation before relying on them for compliance, reporting, or client advice.</li>
+    </ul>
+
+    <h3>Official references</h3>
+    <p>These are the official ATO pages this tool's logic is based on:</p>
+    <ul>
+      <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/about-payday-super" target="_blank" rel="noopener">About Payday Super</a> — ato.gov.au</li>
+      <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/paying-super-on-payday/payment-deadlines-for-payday-super" target="_blank" rel="noopener">Payment deadlines for Payday Super</a> — ato.gov.au</li>
+      <li><a href="https://www.ato.gov.au/businesses-and-organisations/super-for-employers/payday-super/missed-or-late-payday-super-payments" target="_blank" rel="noopener">Missed or late Payday Super payments &amp; the super guarantee charge</a> — ato.gov.au</li>
+    </ul>
+
+    <h3>Public holiday data</h3>
+    <p>Deadline calculations skip weekends and the public holidays listed below for each state/territory, sourced from the Fair Work Ombudsman (Fair Work Act 2009, s.115). Regional or local-area holidays (for example, Royal Hobart Show, Royal Queensland Show outside Brisbane, or Easter Tuesday for Tasmanian public service) and evening-only part-day holidays (for example, Christmas Eve) are deliberately not applied, since they don't create a statewide non-business day. Public holiday data last verified: 15 August 2026.</p>
+    <ul>
+      <li><a href="https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays" target="_blank" rel="noopener">2026 public holidays (all states)</a> — fairwork.gov.au</li>
+      <li><a href="https://www.nsw.gov.au/about-nsw/public-holidays" target="_blank" rel="noopener">Verify NSW public holidays</a></li>
+      <li><a href="https://business.vic.gov.au/business-information/public-holidays" target="_blank" rel="noopener">Verify VIC public holidays</a></li>
+      <li><a href="https://www.qld.gov.au/recreation/travel/holidays/public" target="_blank" rel="noopener">Verify QLD public holidays</a></li>
+      <li><a href="https://www.commerce.wa.gov.au/labour-relations/public-holidays-western-australia" target="_blank" rel="noopener">Verify WA public holidays</a></li>
+      <li><a href="https://www.safework.sa.gov.au/resources/public-holidays" target="_blank" rel="noopener">Verify SA public holidays</a></li>
+      <li><a href="https://worksafe.tas.gov.au/topics/laws-and-compliance/public-holidays" target="_blank" rel="noopener">Verify TAS public holidays</a></li>
+      <li><a href="https://www.cmtedd.act.gov.au/communication/holidays" target="_blank" rel="noopener">Verify ACT public holidays</a></li>
+      <li><a href="https://nt.gov.au/nt-public-holidays" target="_blank" rel="noopener">Verify NT public holidays</a></li>
+    </ul>
+    <p style="font-size:12px;">Note: Victoria's "Friday before the AFL Grand Final" public holiday is not yet included — the 2026 date is typically confirmed closer to finals season (around September) and should be added to VIC's holiday list once announced.</p>
+
+    <p class="rules-reviewed">Rules last reviewed: August 2026. This date reflects when the tool's logic was last checked against ATO guidance — it does not mean the tool updates automatically. Rules and rates (including the GIC rate, which resets quarterly) can change; always check the official ATO pages above for anything current.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalHowto">
+  <div class="modal">
+    <button class="modal-close" data-close>&times;</button>
+    <h2>How To Use PaydaySuperGuard</h2>
+    <p>Nothing is uploaded anywhere — the whole review runs in your browser. Here's the full flow, start to finish.</p>
+
+    <h3>1. Get a payroll export ready</h3>
+    <p>Click <strong>"Download CSV template"</strong> for the exact header row this tool expects, or click <strong>"Load sample data"</strong> to see a worked example before using your own file. Your CSV needs one row per super payment, with these columns:</p>
+    <ul>
+      <li><code>employee_id</code>, <code>employee_name</code></li>
+      <li><code>payday_date</code> — the date wages were paid</li>
+      <li><code>employment_start_date</code> — used to detect a new employee's first payment (longer deadline applies)</li>
+      <li><code>fund_change_flag</code> — <code>yes</code>/<code>no</code>; a fund change also gets the longer deadline</li>
+      <li><code>gross_wages</code>, <code>salary_sacrifice_super</code>, <code>super_rate</code> — used to work out qualifying earnings and expected SG</li>
+      <li><code>sg_amount_actually_paid</code>, <code>date_received_by_fund</code> — leave <code>date_received_by_fund</code> blank if the payment hasn't landed yet</li>
+      <li><code>state</code> — the employee's state/territory, used to apply the correct public holidays</li>
+    </ul>
+
+    <h3>2. Upload and review the settings</h3>
+    <p>Click <strong>"Upload payroll CSV"</strong> and select your file. Before reading the results, check the two settings panels above the table:</p>
+    <ul>
+      <li><strong>GIC rate</strong> — defaults to the current ATO quarterly rate. If you're using the tool in a later quarter, search "ATO general interest charge rates" and update the number.</li>
+      <li><strong>Admin uplift basis</strong> — leave on 60% unless you know a reduced rate (40% or 36%) clearly applies to this employer; 60% is the safer assumption for a client-facing estimate.</li>
+    </ul>
+
+    <h3>3. Read the results</h3>
+    <p>Each payment is sorted into one of these:</p>
+    <ul>
+      <li><strong>On time</strong> — received by the deadline.</li>
+      <li><strong>Late</strong> — received, but after the deadline.</li>
+      <li><strong>Missing / unconfirmed</strong> — no received date yet, and the deadline has already passed.</li>
+      <li><strong>Review required</strong> — a late or missing payment for a first-payment or fund-change employee. These get the longer 20-business-day window and are never auto-labelled "late," since the special-case timing needs a human check.</li>
+      <li><strong>Not yet due</strong> — deadline hasn't arrived yet.</li>
+    </ul>
+    <p>Use the tabs above the table to filter — <strong>"Action required"</strong> jumps straight to everything that's late, missing, or flagged for review, so you don't have to scan every on-time row to find what matters.</p>
+
+    <h3>4. Check the public holidays behind the deadlines</h3>
+    <p>The <strong>"Public holidays"</strong> panel shows exactly which dates were skipped when calculating each state's deadlines — pick a state to see its list. If a holiday was declared after the official source was last checked, add it there: every affected row recalculates immediately, and its deadline gets a small <span class="adj-tag">adj.</span> tag so it's clear the result reflects a manually added date, not just the official list.</p>
+
+    <h3>5. Export your findings</h3>
+    <p>Once your data is loaded, two export buttons appear: <strong>"Export Review Summary (CSV)"</strong> for a spreadsheet-ready file, and <strong>"Export Review Summary (PDF)"</strong> for a print-ready summary you can save or share. Click <strong>"Reset"</strong> to clear everything and start over with a new file.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Theme toggle. Tries to remember the choice via localStorage; if that's
+  // unavailable (e.g. a restricted preview sandbox), it just falls back to
+  // an in-memory default for this session instead of breaking.
+  function getSavedTheme(){
+    try{ return localStorage.getItem('psg-theme'); }catch(e){ return null; }
+  }
+  function saveTheme(t){
+    try{ localStorage.setItem('psg-theme', t); }catch(e){ /* ignore */ }
+  }
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    const icon = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if(icon && label){
+      if(t === 'dark'){ icon.textContent = '☀️'; label.textContent = 'Light'; }
+      else { icon.textContent = '🌙'; label.textContent = 'Dark'; }
+    }
+  }
+  let currentTheme = getSavedTheme() || 'light';
+  applyTheme(currentTheme);
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
+    saveTheme(currentTheme);
+  });
+
+  const TODAY = new Date('2026-08-13T00:00:00');
+
+  // Source: Fair Work Ombudsman, "2026 public holidays" (Fair Work Act 2009, s.115)
+  // https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays
+  // Last verified: 15 August 2026. Cross-checked against each state/territory
+  // government page (linked in the Disclaimer modal's "Public holiday data" section).
+  // Deliberately excludes: regional/local-only holidays and evening-only part-day
+  // holidays — see the Disclaimer modal for why. VIC's "Friday before AFL Grand
+  // Final" is not yet confirmed for 2026 and is not included — add once announced.
+  const NATIONAL_2026 = [
+    {date:'2026-01-01', name:"New Year's Day"},
+    {date:'2026-01-26', name:'Australia Day'},
+    {date:'2026-04-03', name:'Good Friday'},
+    {date:'2026-04-06', name:'Easter Monday'},
+    {date:'2026-04-25', name:'Anzac Day'},
+    {date:'2026-12-25', name:'Christmas Day'},
+  ];
+  const HOLIDAYS_BY_STATE = {
+    NSW: [...NATIONAL_2026, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-10-05',name:'Labour Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    VIC: [...NATIONAL_2026, {date:'2026-03-09',name:'Labour Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-11-03',name:'Melbourne Cup'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    QLD: [...NATIONAL_2026, {date:'2026-05-04',name:'Labour Day'}, {date:'2026-10-05',name:"King's Birthday"}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    WA:  [...NATIONAL_2026, {date:'2026-03-02',name:'Labour Day'}, {date:'2026-04-27',name:'Additional public holiday (Anzac Day)'}, {date:'2026-06-01',name:'Western Australia Day'}, {date:'2026-09-28',name:"King's Birthday"}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    SA:  [...NATIONAL_2026, {date:'2026-03-09',name:'Adelaide Cup Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-10-05',name:'Labour Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    TAS: [...NATIONAL_2026, {date:'2026-03-09',name:'Eight Hours Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-12-28',name:'Boxing Day (observed)'}],
+    ACT: [...NATIONAL_2026, {date:'2026-03-09',name:'Canberra Day'}, {date:'2026-04-27',name:'Anzac Day (observed)'}, {date:'2026-06-01',name:'Reconciliation Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-10-05',name:'Labour Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+    NT:  [...NATIONAL_2026, {date:'2026-05-04',name:'May Day'}, {date:'2026-06-08',name:"King's Birthday"}, {date:'2026-08-03',name:'Picnic Day'}, {date:'2026-12-28',name:'Additional public holiday (Boxing Day)'}],
+  };
+
+  // Custom (user-added) holidays — for a holiday declared after the official
+  // source above was last checked. Stored in localStorage the same way the
+  // theme toggle is; falls back to in-memory only if storage is unavailable.
+  function getCustomHolidays(){
+    try{ const raw = localStorage.getItem('psg-custom-holidays'); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveCustomHolidays(obj){
+    try{ localStorage.setItem('psg-custom-holidays', JSON.stringify(obj)); }catch(e){ /* ignore */ }
+  }
+  let customHolidays = getCustomHolidays();
+
+  function addCustomHoliday(state, date, name){
+    const key = (state||'').toUpperCase().trim();
+    if(!key || !date) return;
+    if(!customHolidays[key]) customHolidays[key] = [];
+    if(customHolidays[key].some(h=>h.date===date)) return; // no duplicate dates
+    customHolidays[key].push({date, name: (name||'').trim() || 'Added by you'});
+    saveCustomHolidays(customHolidays);
+  }
+  function removeCustomHoliday(state, date){
+    const key = (state||'').toUpperCase().trim();
+    if(!customHolidays[key]) return;
+    customHolidays[key] = customHolidays[key].filter(h=>h.date!==date);
+    saveCustomHolidays(customHolidays);
+  }
+
+  // Full list for display in the Public holidays panel — official + custom,
+  // each tagged with its source so nothing is hidden.
+  function holidayListFor(state){
+    const key = (state||'').toUpperCase().trim();
+    const official = (HOLIDAYS_BY_STATE[key] || NATIONAL_2026).map(h=>({date:h.date, name:h.name, source:'official'}));
+    const custom = (customHolidays[key]||[]).map(h=>({date:h.date, name:h.name, source:'custom'}));
+    return [...official, ...custom].sort((a,b)=> a.date < b.date ? -1 : (a.date > b.date ? 1 : 0));
+  }
+
+  // Set of date strings only — this is what the deadline math actually
+  // consumes (isBusinessDay / addBusinessDays below are unchanged).
+  function holidaySetFor(state){
+    const key = (state||'').toUpperCase().trim();
+    const official = (HOLIDAYS_BY_STATE[key] || NATIONAL_2026).map(h=>h.date);
+    const custom = (customHolidays[key]||[]).map(h=>h.date);
+    return new Set([...official, ...custom]);
+  }
+
+  const SAMPLE_CSV =
+`employee_id,employee_name,payday_date,employment_start_date,fund_change_flag,gross_wages,salary_sacrifice_super,super_rate,sg_amount_actually_paid,date_received_by_fund,state
+EMP001,J. Smith,2026-08-07,2022-03-01,No,2400,0,12,288,2026-08-13,NSW
+EMP001,J. Smith,2026-07-24,2022-03-01,No,2400,0,12,288,2026-07-30,NSW
+EMP002,A. Nguyen,2026-08-07,2021-11-10,No,3100,100,12,384,2026-08-20,VIC
+EMP002,A. Nguyen,2026-07-24,2021-11-10,No,3100,100,12,384,2026-07-31,VIC
+EMP003,R. Patel,2026-08-07,2026-07-27,No,2000,0,12,240,,QLD
+EMP004,M. Chen,2026-08-07,2020-05-04,No,2850,150,12,360,2026-08-14,NSW
+EMP004,M. Chen,2026-07-24,2020-05-04,No,2850,150,12,360,2026-08-05,NSW
+EMP005,T. Wallace,2026-08-07,2019-02-18,Yes,3400,0,12,408,2026-08-28,WA
+EMP006,S. Kelly,2026-08-07,2023-09-01,No,2600,0,12,312,2026-08-12,SA
+EMP006,S. Kelly,2026-07-24,2023-09-01,No,2600,0,12,312,2026-07-29,SA
+EMP007,D. Osei,2026-08-07,2018-06-12,No,4100,200,12,516,2026-08-25,NSW
+EMP008,L. Fraser,2026-08-07,2024-01-15,No,2200,0,12,264,2026-08-15,VIC`;
+
+  function isBusinessDay(d, holidays){
+    const day = d.getDay();
+    const iso = d.toISOString().slice(0,10);
+    return day !== 0 && day !== 6 && !holidays.has(iso);
+  }
+  function addBusinessDays(start, n, holidays){
+    let d = new Date(start);
+    let added = 0;
+    while(added < n){
+      d.setDate(d.getDate()+1);
+      if(isBusinessDay(d, holidays)) added++;
+    }
+    return d;
+  }
+  function calendarDiff(a,b){ return Math.round((b-a)/(1000*60*60*24)); }
+  function fmt(d){
+    if(!d) return '—';
+    return d.toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'});
+  }
+  function money(n){ return '$'+n.toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+
+  function parseCSV(text){
+    const lines = text.trim().split(/\r?\n/);
+    const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+    return lines.slice(1).filter(l=>l.trim()).map(line=>{
+      const cells = line.split(',').map(c=>c.trim());
+      const row = {};
+      headers.forEach((h,i)=> row[h] = cells[i] !== undefined ? cells[i] : '');
+      return row;
+    });
+  }
+
+  function computeRows(raw){
+    const firstPayday = {};
+    raw.forEach(r=>{
+      const t = new Date(r.payday_date).getTime();
+      if(!firstPayday[r.employee_id] || t < firstPayday[r.employee_id]) firstPayday[r.employee_id] = t;
+    });
+
+    const gicRate = (parseFloat(document.getElementById('gicRate')?.value) || 11.43) / 100;
+    const upliftRate = parseFloat(document.getElementById('upliftMode')?.value) || 0.6;
+    const dailyGic = gicRate / 365;
+
+    function computeSGC(base, days){
+      const notional = base * (Math.pow(1 + dailyGic, days) - 1);
+      const uplift = upliftRate * (base + notional);
+      return {
+        shortfall: Math.round(base),
+        notional: Math.round(notional),
+        uplift: Math.round(uplift),
+        total: Math.round(base + notional + uplift)
+      };
+    }
+
+    return raw.map(r=>{
+      const payday = new Date(r.payday_date);
+      const isFirstPayment = new Date(r.employment_start_date).getTime() && payday.getTime() === firstPayday[r.employee_id];
+      const fundChange = (r.fund_change_flag||'').toLowerCase() === 'yes';
+      const windowDays = (isFirstPayment || fundChange) ? 20 : 7;
+      const holidays = holidaySetFor(r.state);
+      const deadline = addBusinessDays(payday, windowDays, holidays);
+      const stateKey = (r.state||'').toUpperCase().trim();
+      const customAdjusted = (customHolidays[stateKey]||[]).some(h=>{
+        const hd = new Date(h.date);
+        return hd.getTime() > payday.getTime() && hd.getTime() <= deadline.getTime();
+      });
+
+      const gross = parseFloat(r.gross_wages)||0;
+      const sacrifice = parseFloat(r.salary_sacrifice_super)||0;
+      const rate = (parseFloat(r.super_rate)||12)/100;
+      const qualifyingEarnings = gross + sacrifice;
+      const expectedSG = Math.round(qualifyingEarnings * rate * 100)/100;
+      const paidSG = parseFloat(r.sg_amount_actually_paid)||0;
+
+      const received = r.date_received_by_fund ? new Date(r.date_received_by_fund) : null;
+
+      let status, daysLate = 0;
+      let sgcShortfall = 0, sgcNotionalEarnings = 0, sgcAdminUplift = 0, sgcTotal = 0;
+      const specialCase = isFirstPayment || fundChange;
+
+      if(received){
+        if(received.getTime() <= deadline.getTime()){
+          status = 'on_time';
+        } else {
+          daysLate = calendarDiff(deadline, received);
+          const sgc = computeSGC(expectedSG, daysLate);
+          sgcShortfall = sgc.shortfall; sgcNotionalEarnings = sgc.notional;
+          sgcAdminUplift = sgc.uplift; sgcTotal = sgc.total;
+          status = specialCase ? 'review_required' : 'late';
+        }
+      } else {
+        if(TODAY.getTime() > deadline.getTime()){
+          daysLate = calendarDiff(deadline, TODAY);
+          const sgc = computeSGC(expectedSG, daysLate);
+          sgcShortfall = sgc.shortfall; sgcNotionalEarnings = sgc.notional;
+          sgcAdminUplift = sgc.uplift; sgcTotal = sgc.total;
+          status = specialCase ? 'review_required' : 'missing_unconfirmed';
+        } else {
+          status = 'pending';
+        }
+      }
+
+      return {
+        ...r, payday, deadline, received, windowDays, isFirstPayment, fundChange,
+        qualifyingEarnings, expectedSG, paidSG, status, daysLate, customAdjusted,
+        sgcShortfall, sgcNotionalEarnings, sgcAdminUplift, exposure: sgcTotal
+      };
+    });
+  }
+
+  function statusMeta(status){
+    switch(status){
+      case 'on_time': return {label:'ON TIME', cls:'ok'};
+      case 'late': return {label:'LATE', cls:'danger'};
+      case 'missing_unconfirmed': return {label:'MISSING / UNCONFIRMED', cls:'danger'};
+      case 'review_required': return {label:'REVIEW REQUIRED', cls:'review'};
+      case 'pending': return {label:'Not yet due', cls:'warn'};
+    }
+  }
+
+  let currentRows = [];
+  let currentFilter = 'all';
+  let rawRows = [];
+
+  function renderClock(row){
+    const deadlineCal = Math.max(calendarDiff(row.payday, row.deadline),1);
+    const receivedCal = row.received ? calendarDiff(row.payday, row.received) : calendarDiff(row.payday, TODAY);
+    const span = Math.max(deadlineCal, receivedCal) * 1.15;
+    const deadlinePct = Math.min((deadlineCal/span)*100, 100);
+    const fillPct = Math.min((Math.max(receivedCal,0)/span)*100, 100);
+    const cls = row.status === 'on_time' ? 'ok' : (row.status === 'pending' ? 'warn' : 'danger');
+    return `
+      <div class="clock">
+        <div class="fill ${cls}" style="width:${fillPct}%"></div>
+        <div class="deadline-tick" style="left:${deadlinePct}%"></div>
+      </div>
+      <div class="clock-label">${row.windowDays}bd window</div>
+    `;
+  }
+
+  function render(){
+    const content = document.getElementById('content');
+    if(currentRows.length === 0){
+      content.innerHTML = `<div class="empty">No data loaded yet. Upload a payroll CSV or load the sample dataset above.</div>`;
+      return;
+    }
+
+    const total = currentRows.length;
+    const employeesReviewed = new Set(currentRows.map(r=>r.employee_id)).size;
+    const onTime = currentRows.filter(r=>r.status==='on_time').length;
+    const late = currentRows.filter(r=>r.status==='late').length;
+    const missing = currentRows.filter(r=>r.status==='missing_unconfirmed').length;
+    const reviewRequired = currentRows.filter(r=>r.status==='review_required').length;
+    const notYetDue = currentRows.filter(r=>r.status==='pending').length;
+    // Review-required rows are excluded from the confident SGC total — they haven't
+    // been established as late, only flagged for manual review.
+    const totalExposure = currentRows.filter(r=>r.status==='late'||r.status==='missing_unconfirmed').reduce((s,r)=>s+r.exposure,0);
+    const reviewRequiredExposure = currentRows.filter(r=>r.status==='review_required').reduce((s,r)=>s+r.exposure,0);
+
+    const paydays = currentRows.map(r=>r.payday.getTime());
+    const periodStart = fmt(new Date(Math.min(...paydays)));
+    const periodEnd = fmt(new Date(Math.max(...paydays)));
+
+    const filtered = currentFilter==='all' ? currentRows :
+      currentFilter==='exceptions' ? currentRows.filter(r=>r.status==='late'||r.status==='missing_unconfirmed'||r.status==='review_required') :
+      currentFilter==='ontime' ? currentRows.filter(r=>r.status==='on_time') :
+      currentRows.filter(r=>r.status===currentFilter);
+
+    content.innerHTML = `
+      <p class="period-line">Payroll period reviewed: <strong>${periodStart} – ${periodEnd}</strong> &middot; Reviewed ${TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'})}</p>
+
+      <div class="summary">
+        <div class="stat">
+          <div class="label">Employees reviewed</div>
+          <div class="value">${employeesReviewed}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Payments reviewed</div>
+          <div class="value">${total}</div>
+        </div>
+        <div class="stat">
+          <div class="label">On time</div>
+          <div class="value" style="color:var(--ok)">${onTime}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Late</div>
+          <div class="value" style="color:var(--danger)">${late}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Missing / unconfirmed</div>
+          <div class="value" style="color:var(--danger)">${missing}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Review required</div>
+          <div class="value" style="color:var(--review)">${reviewRequired}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Not yet due</div>
+          <div class="value" style="color:var(--warn)">${notYetDue}</div>
+        </div>
+      </div>
+
+      <div class="stat-highlight">
+        <div class="highlight-main">
+          <div class="label">Est. SGC exposure</div>
+          <div class="value">${money(totalExposure)}</div>
+        </div>
+        <div class="highlight-note">Indicative only — not an official SGC assessment${reviewRequiredExposure ? `. An additional ${money(reviewRequiredExposure)} across flagged review-required items is not included in this total.` : '.'}</div>
+      </div>
+
+      <p class="reconcile-note">On time + Late + Missing/unconfirmed + Review required + Not yet due = ${onTime}+${late}+${missing}+${reviewRequired}+${notYetDue} = ${onTime+late+missing+reviewRequired+notYetDue} of ${total} payments reviewed.</p>
+
+      <div class="filters">
+        <div class="tab ${currentFilter==='all'?'active':''}" data-f="all">All (${total})</div>
+        <div class="tab ${currentFilter==='exceptions'?'active':''}" data-f="exceptions">Action required (${late+missing+reviewRequired})</div>
+        <div class="tab ${currentFilter==='late'?'active':''}" data-f="late">Late (${late})</div>
+        <div class="tab ${currentFilter==='missing_unconfirmed'?'active':''}" data-f="missing_unconfirmed">Missing / unconfirmed (${missing})</div>
+        <div class="tab ${currentFilter==='review_required'?'active':''}" data-f="review_required">Review required (${reviewRequired})</div>
+        <div class="tab ${currentFilter==='ontime'?'active':''}" data-f="ontime">On time (${onTime})</div>
+        <div class="tab ${currentFilter==='pending'?'active':''}" data-f="pending">Not yet due (${notYetDue})</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Payday</th>
+              <th>Deadline</th>
+              <th>Received</th>
+              <th>Timeline</th>
+              <th>Status</th>
+              <th>Expected SG</th>
+              <th>Est. SGC<br><span class="th-note">indicative</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(r=>{
+              const meta = statusMeta(r.status);
+              return `
+                <tr>
+                  <td data-col="employee"><span class="name">${r.employee_name}</span><span class="sub-id">${r.employee_id}${r.isFirstPayment?' · new':''}${r.fundChange?' · fund change':''} · ${r.state||'—'}</span></td>
+                  <td class="mono" data-label="Payday">${fmt(r.payday)}</td>
+                  <td class="mono" data-label="Deadline">${fmt(r.deadline)}${r.customAdjusted ? '<span class="adj-tag" title="This deadline reflects a holiday you added manually, not the official source list">adj.</span>' : ''}</td>
+                  <td class="mono" data-label="Received">${r.received ? fmt(r.received) : '—'}</td>
+                  <td data-col="timeline" data-label="Timeline">${renderClock(r)}</td>
+                  <td data-label="Status"><span class="badge ${meta.cls}"><span class="dot"></span>${meta.label}${r.daysLate?` · ${r.daysLate}d`:''}</span></td>
+                  <td class="mono" data-label="Expected SG">${money(r.expectedSG)}</td>
+                  <td class="mono" data-label="Est. SGC (indicative)">${r.exposure ? money(r.exposure) : '—'}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    content.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        currentFilter = tab.dataset.f;
+        render();
+      });
+    });
+  }
+
+  function loadCSVText(text){
+    rawRows = parseCSV(text);
+    currentRows = computeRows(rawRows);
+    currentFilter = 'all';
+    document.getElementById('exportRow').style.display = 'flex';
+    render();
+  }
+
+  function recompute(){
+    if(rawRows.length === 0) return;
+    currentRows = computeRows(rawRows);
+    render();
+  }
+
+  document.getElementById('resetTool').addEventListener('click', ()=>{
+    rawRows = [];
+    currentRows = [];
+    currentFilter = 'all';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileStatus').textContent = '';
+    document.getElementById('exportRow').style.display = 'none';
+    render();
+  });
+
+  document.getElementById('loadSample').addEventListener('click', ()=>{
+    document.getElementById('fileStatus').textContent = 'Loaded: sample dataset (8 employees)';
+    loadCSVText(SAMPLE_CSV);
+  });
+
+  document.getElementById('fileInput').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      document.getElementById('fileStatus').textContent = 'Loaded: '+file.name;
+      loadCSVText(ev.target.result);
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('gicRate').addEventListener('input', recompute);
+  document.getElementById('gicRate').addEventListener('change', recompute);
+  document.getElementById('upliftMode').addEventListener('change', recompute);
+
+  function renderHolidayList(){
+    const state = document.getElementById('holidayStateSelect').value;
+    const list = holidayListFor(state);
+    const el = document.getElementById('holidayList');
+    el.innerHTML = (list.length ? list.map(h=>`
+      <div class="holiday-item">
+        <span class="hi-left">
+          <span class="hi-date">${fmt(new Date(h.date))}</span>
+          <span>${h.name || 'Public holiday'}</span>
+          <span class="holiday-badge ${h.source}">${h.source==='official' ? 'Official source' : 'Added by you'}</span>
+        </span>
+        ${h.source==='custom' ? `<button class="holiday-remove" data-remove-date="${h.date}" title="Remove this holiday">&times;</button>` : ''}
+      </div>
+    `).join('') : '<p class="settings-help">No holidays listed for this state.</p>');
+
+    el.querySelectorAll('[data-remove-date]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        removeCustomHoliday(state, btn.dataset.removeDate);
+        renderHolidayList();
+        recompute();
+      });
+    });
+  }
+
+  document.getElementById('holidayStateSelect').addEventListener('change', renderHolidayList);
+
+  document.getElementById('addHolidayBtn').addEventListener('click', ()=>{
+    const state = document.getElementById('holidayStateSelect').value;
+    const dateInput = document.getElementById('newHolidayDate');
+    const nameInput = document.getElementById('newHolidayName');
+    if(!dateInput.value){
+      alert('Pick a date before adding a holiday.');
+      return;
+    }
+    addCustomHoliday(state, dateInput.value, nameInput.value);
+    dateInput.value = '';
+    nameInput.value = '';
+    renderHolidayList();
+    recompute();
+  });
+
+  renderHolidayList();
+
+  document.getElementById('downloadTemplate').addEventListener('click', ()=>{
+    try{
+      const header = 'employee_id,employee_name,payday_date,employment_start_date,fund_change_flag,gross_wages,salary_sacrifice_super,super_rate,sg_amount_actually_paid,date_received_by_fund,state\n';
+      const blob = new Blob([header], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'paydaysuperguard_template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }catch(err){
+      alert('Download blocked in this preview environment. This works normally once the tool is hosted live — or copy the header row from the docs above.');
+    }
+  });
+
+  function summaryFigures(){
+    const total = currentRows.length;
+    const employeesReviewed = new Set(currentRows.map(r=>r.employee_id)).size;
+    const onTime = currentRows.filter(r=>r.status==='on_time').length;
+    const late = currentRows.filter(r=>r.status==='late').length;
+    const missing = currentRows.filter(r=>r.status==='missing_unconfirmed').length;
+    const reviewRequired = currentRows.filter(r=>r.status==='review_required').length;
+    const totalExposure = currentRows.filter(r=>r.status==='late'||r.status==='missing_unconfirmed').reduce((s,r)=>s+r.exposure,0);
+    const paydays = currentRows.map(r=>r.payday.getTime());
+    const periodStart = fmt(new Date(Math.min(...paydays)));
+    const periodEnd = fmt(new Date(Math.max(...paydays)));
+    const reviewDate = TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'});
+    return {total, employeesReviewed, onTime, late, missing, reviewRequired, totalExposure, periodStart, periodEnd, reviewDate};
+  }
+
+  document.getElementById('exportCsv').addEventListener('click', ()=>{
+    try{
+      const s = summaryFigures();
+      const summaryLines = [
+        'PaydaySuperGuard — Review Summary',
+        `Review date,${s.reviewDate}`,
+        `Payroll period reviewed,${s.periodStart} to ${s.periodEnd}`,
+        `Employees reviewed,${s.employeesReviewed}`,
+        `Payments reviewed,${s.total}`,
+        `On time,${s.onTime}`,
+        `Late,${s.late}`,
+        `Missing / unconfirmed,${s.missing}`,
+        `Review required,${s.reviewRequired}`,
+        `Estimated potential SGC exposure,${money(s.totalExposure)} (indicative only — not an official SGC assessment)`,
+        '',
+        'Detailed records',
+      ];
+      const headers = ['employee_id','employee_name','state','payday','deadline','received','status','days_late',
+        'expected_sg','sgc_shortfall','sgc_notional_earnings','sgc_admin_uplift','sgc_total_estimate'];
+      const rows = currentRows.map(r=>[
+        r.employee_id, r.employee_name, r.state||'', r.payday.toISOString().slice(0,10),
+        r.deadline.toISOString().slice(0,10), r.received ? r.received.toISOString().slice(0,10) : '',
+        statusMeta(r.status).label, r.daysLate, r.expectedSG,
+        r.sgcShortfall||0, r.sgcNotionalEarnings||0, r.sgcAdminUplift||0, r.exposure||0
+      ].join(','));
+      const csv = summaryLines.join('\n')+'\n'+headers.join(',')+'\n'+rows.join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'paydaysuperguard_review_summary.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }catch(err){
+      alert('Export failed in this preview environment. This works normally once the tool is hosted live.');
+    }
+  });
+
+  function inIframe(){
+    try{ return window.self !== window.top; }catch(e){ return true; }
+  }
+
+  function buildPrintableDoc(){
+    const s = summaryFigures();
+    const rows = currentRows.map(r=>{
+      const meta = statusMeta(r.status);
+      return `<tr>
+        <td>${r.employee_name} (${r.employee_id})</td>
+        <td>${r.state||'—'}</td>
+        <td>${fmt(r.payday)}</td>
+        <td>${fmt(r.deadline)}</td>
+        <td>${r.received ? fmt(r.received) : '—'}</td>
+        <td>${meta.label}${r.daysLate?` (${r.daysLate}d)`:''}</td>
+        <td>${money(r.expectedSG)}</td>
+        <td>${r.exposure ? money(r.exposure) : '—'}</td>
+      </tr>`;
+    }).join('');
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PaydaySuperGuard — Review Summary</title>
+    <style>
+      body{font-family:Georgia,serif;color:#16211F;padding:36px;max-width:900px;margin:0 auto;}
+      h1{font-size:22px;margin-bottom:4px;}
+      p.meta{font-family:-apple-system,sans-serif;font-size:12px;color:#5B6A67;margin-top:0;}
+      .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;font-family:-apple-system,sans-serif;}
+      .summary-grid div{border:1px solid #E1E6E4;border-radius:8px;padding:10px 12px;}
+      .summary-grid .label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#5B6A67;}
+      .summary-grid .value{font-size:18px;font-weight:600;margin-top:3px;}
+      table{width:100%;border-collapse:collapse;margin-top:20px;font-family:-apple-system,sans-serif;font-size:12px;}
+      th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #E1E6E4;}
+      th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#5B6A67;}
+      p.disclaimer{font-family:-apple-system,sans-serif;font-size:10.5px;color:#5B6A67;margin-top:24px;line-height:1.6;border-top:1px solid #E1E6E4;padding-top:14px;}
+    </style></head><body>
+      <h1>PaydaySuperGuard — Payday Super Review Summary</h1>
+      <p class="meta">Review date: ${s.reviewDate} &nbsp;&middot;&nbsp; Payroll period reviewed: ${s.periodStart} – ${s.periodEnd}</p>
+      <div class="summary-grid">
+        <div><div class="label">Employees reviewed</div><div class="value">${s.employeesReviewed}</div></div>
+        <div><div class="label">Payments reviewed</div><div class="value">${s.total}</div></div>
+        <div><div class="label">On time</div><div class="value">${s.onTime}</div></div>
+        <div><div class="label">Late</div><div class="value">${s.late}</div></div>
+        <div><div class="label">Missing / unconfirmed</div><div class="value">${s.missing}</div></div>
+        <div><div class="label">Review required</div><div class="value">${s.reviewRequired}</div></div>
+      </div>
+      <p class="meta"><strong>Estimated potential SGC exposure: ${money(s.totalExposure)}</strong> — indicative only, not an official SGC assessment.</p>
+      <table>
+        <thead><tr><th>Employee</th><th>State</th><th>Payday</th><th>Deadline</th><th>Received</th><th>Status</th><th>Expected SG</th><th>Est. SGC</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p class="disclaimer">PaydaySuperGuard is an independent screening/review tool and is not an ATO product or approved compliance system. Results depend on the accuracy and completeness of the uploaded data. This tool does not provide tax or legal advice. Estimated SGC exposure is indicative only and is not a substitute for an actual SGC assessment. Actual SGC obligations can depend on circumstances and information not captured by this tool. Verify results against current ATO guidance and applicable legislation before relying on them for compliance, reporting, or client advice. Rules last reviewed: August 2026.</p>
+    </body></html>`;
+  }
+
+  document.getElementById('exportPdf').addEventListener('click', ()=>{
+    try{
+      if(inIframe()){
+        const blob = new Blob([buildPrintableDoc()], {type:'text/html'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'paydaysuperguard_summary.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Downloaded a print-ready summary file. Open it in your browser, then choose Print → Save as PDF. (Direct printing is restricted inside this preview — this step isn\'t needed once the tool is hosted live.)');
+      } else {
+        document.getElementById('printDate').textContent =
+          'Generated '+TODAY.toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'})+
+          ' — illustrative SGC estimates only, not a substitute for professional advice.';
+        window.print();
+      }
+    }catch(err){
+      alert('Export failed. Please try again, or use the CSV export instead.');
+    }
+  });
+
+  // Modals
+  document.querySelectorAll('[data-modal]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('modal'+btn.dataset.modal.charAt(0).toUpperCase()+btn.dataset.modal.slice(1)).classList.add('open');
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(btn=>{
+    btn.addEventListener('click', ()=> btn.closest('.modal-overlay').classList.remove('open'));
+  });
+  document.querySelectorAll('.modal-overlay').forEach(ov=>{
+    ov.addEventListener('click', (e)=>{ if(e.target === ov) ov.classList.remove('open'); });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
